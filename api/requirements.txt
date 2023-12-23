@@ -5,4 +5,5 @@ flask_redis
 redis
 requests
 PluginBase
+python-Wappalyzer
 wafw00f
