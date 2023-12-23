@@ -1,21 +1,3 @@
-from flask import Flask,request, jsonify
-# import app.waf_test.waf.waf_script as waf_script
-import app.initialize as initialize
-
-
-def create_app(app_redis):
-    
-    return "app"
-    # @app.route('/waf_test')
-    # def waf_test():    
-    #     address=request.args.get('address')
-    #     if address is not None:
-    #         result=waf_script.waf_ps(address)
-    #         return jsonify(result)
-    #     else:
-    #         return jsonify({"error":f"address parametresi eksik"}),502
-
-
 class response:
     dictionary={}
     def __init__(self,code,message):

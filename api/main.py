@@ -2,7 +2,7 @@ import redis
 import app.initialize as initialize
 from flask import Flask,request, session, redirect, url_for,make_response, jsonify  
 import secrets
-import app.app as my_app
+import app.messages as my_app
 import traceback 
 import waf.wafw00f.main as waf_script
 

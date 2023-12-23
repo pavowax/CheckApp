@@ -3,9 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event
 from datetime import datetime, timedelta
 
-
-
-
 def initialize(app: Flask):
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@db/my-flask-app'
