@@ -1,0 +1,21 @@
+verbose default=0 required
+findall default=false required
+noredirect default=True required
+test no defualt
+output default=None
+format default=None
+list default=False
+proxy default=None
+version default=False
+headers default=None
+no-color default=True
+input no default
+
+
+{   
+    "[0]":"sample sentence 0",
+    "[1]":"sample sentence 1",
+    "[2]":"sample sentence 2",
+    "[3]":"sample sentence 3",
+    "[4]":"sample sentence 4",
+}

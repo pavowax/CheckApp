@@ -1,0 +1,8 @@
+flask
+flask_sqlalchemy
+psycopg2
+flask_redis
+redis
+requests
+PluginBase
+wafw00f
