@@ -1,8 +1,11 @@
+
 class response:
     dictionary={}
-    def __init__(self,code,message):
+    def __init__(self,code,message,data: dict = {}):
         self.dictionary["status_code"]=code
         self.dictionary["message"]=message
+        self.dictionary["data"]=data
+
 
 class response_user_data(response):
     dictionary={}
@@ -18,6 +21,7 @@ class response_messages:
     user_already_exist="User already exist"
     should_not_be_empty="Should not be empty"
     already_looged_in="Already logged in"
+    no_address_parameter="There is no address parameter in url"
 
 class status:
     OK="200"
