@@ -146,12 +146,15 @@ def index():
 @app.route('/waf_test')
 def waf_test():    
     try:
-        address=request.args.get('address')
+        address=request.args.get('address') #kontrol
         if address is not None:
             result=waf_script.waf_ps(address)
-            return jsonify(result)
+            if result is not None:
+                return  my_app.response(f"{my_app.status.OK}",f"{my_app.status.ok_message}",f"{result}").dictionary,f"{my_app.status.OK}"
+            else:
+                return my_app.response(f"{my_app.status.InternalServerError}",f"{my_app.status.internal_server_error_message}").dictionary,f"{my_app.status.InternalServerError}"
         else:
-            return jsonify({"error":f"address parametresi eksik"}),400
+            return my_app.response(f"{my_app.status.BadRequest}",f"{my_app.response_messages.no_address_parameter}").dictionary,f"{my_app.status.BadRequest}"
     except:
         with open("/var/log/btlog.txt", "a",encoding='utf-8') as file:
             file.write(f"{traceback.format_exc()}\n")
@@ -164,9 +167,9 @@ def wappalyzer_test():
         if address is not None:
             webpage = WebPage.new_from_url(address)
             wappalyzer = Wappalyzer.latest()
-            return wappalyzer.analyze_with_versions_and_categories(webpage)
+            return my_app.response(f"{my_app.status.OK}",f"{my_app.status.ok_message}",f"{wappalyzer.analyze_with_versions_and_categories(webpage)}").dictionary,f"{my_app.status.OK}"
         else:
-            return jsonify({"error":f"address parametresi eksik"}),400
+            return my_app.response(f"{my_app.status.BadRequest}",f"{my_app.response_messages.no_address_parameter}").dictionary,f"{my_app.status.BadRequest}"
     except:
         with open("/var/log/btlog.txt", "a",encoding='utf-8') as file:
             file.write(f"{traceback.format_exc()}\n")
