@@ -1,4 +1,4 @@
-FROM python
+FROM python:latest
 
 # Path: /app
 WORKDIR /app

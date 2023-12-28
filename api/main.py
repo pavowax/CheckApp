@@ -17,9 +17,9 @@ app.secret_key = secrets.token_hex(64).encode('utf-8')
 @app.before_request
 def before_request():
     try:
-        if request.path == '/index' or request.path == '/login' or request.path == '/':
+        if request.path == '/api/index' or request.path == '/api/login' or request.path == '/api':
             pass
-        elif request.path == '/register':
+        elif request.path == '/api/register':
             if app_redis.exists('session'):
                 if f"{session}"==f"{app_redis.get('session').decode('utf-8')}":
                     return my_app.response(f"{my_app.status.BadRequest}",f"{my_app.response_messages.already_looged_in}").dictionary,f"{my_app.status.BadRequest}"
@@ -42,7 +42,7 @@ def before_request():
         return my_app.response(f"{my_app.status.InternalServerError}",f"{my_app.status.internal_server_error_message}").dictionary,f"{my_app.status.InternalServerError}"
 
 
-@app.route("/register", methods=['POST'])
+@app.route("/api/register", methods=['POST'])
 def register():
     user_name = request.form['username']
     password = request.form['password']
@@ -63,16 +63,16 @@ def register():
         return my_app.response(f"{my_app.status.BadRequest}",f"{my_app.response_messages.should_not_be_empty}").dictionary,f"{my_app.status.BadRequest}"
 
 
-@app.route('/')
+@app.route('/api')
 def home():
     try:
-        return redirect(url_for('index'))
+        return redirect(url_for('/api/index'))
     except:
         with open("/var/log/btlog.txt", "a",encoding='utf-8') as file:
             file.write(f"{traceback.format_exc()}\n")
         return my_app.response(f"{my_app.status.InternalServerError}",f"{my_app.status.internal_server_error_message}").dictionary,f"{my_app.status.InternalServerError}"
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     try:
         user_name = request.form['username']
@@ -98,7 +98,7 @@ def login():
             file.write(f"{traceback.format_exc()}\n")
         return my_app.response(f"{my_app.status.InternalServerError}",f"{my_app.status.internal_server_error_message}").dictionary,f"{my_app.status.InternalServerError}"
 
-@app.route('/logout')
+@app.route('/api/logout')
 def logout():
     try:
         deleted=app_redis.delete('session')
@@ -106,13 +106,13 @@ def logout():
         if not deleted:
             return my_app.response(f"{my_app.status.BadRequest}",f"{my_app.status.unauthorized_message}").dictionary,f"{my_app.status.BadRequest}"
         else:
-            return redirect(url_for('index'))
+            return redirect(url_for('/api/index'))
         # if app_redis.exists('username'):
         #     deleted=app_redis.delete('username')
         #     if not deleted:
         #         return my_app.response(f"{my_app.status.BadRequest}",f"{my_app.status.unauthorized_message}").dictionary,f"{my_app.status.BadRequest}"
         #     else:
-        #         return redirect(url_for('index'))
+        #         return redirect(url_for('/api/index'))
         # else:
         #     return my_app.response(f"{my_app.status.Unauthorized}",f"{my_app.status.unauthorized_message}").dictionary,f"{my_app.status.Unauthorized}"
     except:
@@ -120,7 +120,7 @@ def logout():
             file.write(f"{traceback.format_exc()}\n")
         return my_app.response(f"{my_app.status.InternalServerError}",f"{my_app.status.internal_server_error_message}").dictionary,f"{my_app.status.InternalServerError}"
 
-@app.route('/index')
+@app.route('/api/index', endpoint='/api/index')
 def index(): 
     try:
         if app_redis.exists('session') and 'username' in session:
@@ -143,7 +143,7 @@ def index():
         return my_app.response(f"{my_app.status.InternalServerError}",f"{my_app.status.internal_server_error_message}").dictionary,f"{my_app.status.InternalServerError}"
         
 
-@app.route('/waf_test')
+@app.route('/api/waf_test')
 def waf_test():    
     try:
         address=request.args.get('address') #kontrol
@@ -160,7 +160,7 @@ def waf_test():
             file.write(f"{traceback.format_exc()}\n")
         return my_app.response(f"{my_app.status.InternalServerError}",f"{my_app.status.internal_server_error_message}").dictionary,f"{my_app.status.InternalServerError}"
 
-@app.route('/wappalyzer_test')
+@app.route('/api/wappalyzer_test')
 def wappalyzer_test():
     try:
         address=request.args.get('address') #kontrol
