@@ -15,8 +15,8 @@ export default class NavBar extends Component {
   render() {
     return (
       <nav className='NavBarItems'>
-        <h1 className='navbar-logo'>
-            SCANNING APP
+        <h1><a href='/' style={{textDecoration : "none"}} className='navbar-logo'>SCANNING APP</a>
+            
         </h1>
 
         <div className="menu-icons" onClick={this.handleClicke}>
