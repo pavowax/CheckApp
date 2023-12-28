@@ -17,17 +17,18 @@
     justify-content: space-between;
     margin-top: 4.5rem;
 }
-.des.text{
-    width: 45%;
+.des-text{
+    width: 50%;
     text-align: start;
     font-size: 1.1rem;
 }
-.des.text h2{
+.des-text h2{
     padding-bottom: 1rem;
+    text-align: center;
 }
 .image{
     position: relative;
-    width: 50%;
+    width: 45%;
     display: flex;
     justify-content: space-between;
     z-index: -99;
@@ -58,7 +59,7 @@ image img:nth-child(){
         flex-direction: column-reverse;
         margin-top: 2.5rem;
     }
-    .des.text{
+    .des-text{
         width: 100%;
     }
     .image{

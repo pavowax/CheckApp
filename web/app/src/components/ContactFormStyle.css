@@ -25,6 +25,22 @@
 .form-container button{
     display: inline;
 }
+button{
+    padding: 0.7rem 1rem;
+    white-space: nowrap;
+    border-radius: 0.3rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+    white-space: nowrap;
+    
+}
+button:hover{
+    background-color: #A33128;
+    color: #fff;
+}
 @media screen and (max-width:1110px) {
     .form-container {
         margin: 4rem 2rem;
