@@ -33,5 +33,12 @@ export const MenuItems = [
         cName : "nav-links",
         id : "sign",
         icon : "fa-solid fa-user"
+    },
+    {
+        title : " Deneme",
+        url : "/req",
+        cName : "nav-links",
+        id : "req",
+        icon : "fa-solid fa-trash"
     }
 ]

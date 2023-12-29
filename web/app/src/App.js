@@ -4,6 +4,7 @@ import Home from "./routes/Home";
 import About from "./routes/About";
 import Service from "./routes/Service";
 import Contact from "./routes/Contact";
+import Deneme from "./routes/Deneme";
 import Sign from "./routes/Sign";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/service" element={<Service/>}/>
         <Route path="/contact" element={<Contact/>}/>
         <Route path="/sign" element={<Sign/>}/>
+        <Route path="/req" element={<Deneme/>}/>
       </Routes>
     </div>
   );
