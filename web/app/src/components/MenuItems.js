@@ -36,7 +36,7 @@ export const MenuItems = [
     },
     {
         title : " Deneme",
-        url : "/req",
+        url : "/api",
         cName : "nav-links",
         id : "req",
         icon : "fa-solid fa-trash"

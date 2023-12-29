@@ -16,7 +16,7 @@ function App() {
         <Route path="/service" element={<Service/>}/>
         <Route path="/contact" element={<Contact/>}/>
         <Route path="/sign" element={<Sign/>}/>
-        <Route path="/req" element={<Deneme/>}/>
+        <Route path="/api" element={<Deneme/>}/>
       </Routes>
     </div>
   );
