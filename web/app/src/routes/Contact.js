@@ -10,9 +10,7 @@ function Contact() {
       <NavBar/>
       <Hero
       cName = "hero-mid"
-      heroImg = {ContactImg}
       title = "CONTACT"
-      buttonClass = "hide"
       />
       <ContactForm/>
       <Footer/>

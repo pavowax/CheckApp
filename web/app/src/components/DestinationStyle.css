@@ -32,6 +32,7 @@
     display: flex;
     justify-content: space-between;
     z-index: -99;
+    opacity: 1;
 }
 .image img{
     width: 49%;
@@ -39,6 +40,7 @@
     object-fit: cover;
     border-radius: 6px;
     box-shadow: -1px 1px 62px -18px rgba(0, 0, 0, 0.19);
+    opacity: 1;
 }
 image img:nth-child(){
     position: absolute;
@@ -65,8 +67,10 @@ image img:nth-child(){
     .image{
         width: 100%;
         margin: 1.8rem 0;
+        opacity: 1;
     }
     .image img{
         height: 250px;
+        opacity: 1;
     }
 }

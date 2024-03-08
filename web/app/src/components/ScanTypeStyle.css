@@ -13,7 +13,7 @@
 .s-card{
     width: 32%;
     text-align: start;
-    box-shadow: 0 10px 55px 5px #A33128;
+    box-shadow: 0 10px 40px 5px #3c0161;
     border-radius:  7px;
     cursor: pointer;
     padding: 1rem 0.8rem;
@@ -23,6 +23,7 @@
     height: 200px;
     overflow: hidden;
     border-radius: 7px;
+    opacity: 1;
 }
 .s-img img{
     width: 100%;

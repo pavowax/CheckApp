@@ -11,12 +11,8 @@ function Home() {
       <NavBar/>
       <Hero
       cName = "hero"
-      heroImg = {HomeImg}
       title = "SECURITY"
-      text = "Take the your secure for attacks"
-      buttonText = "Scanning Type"
-      url = "/"
-      buttonClass = "show"
+      text = "Take the your secure for attack" //Cümlenin devamı için ortalama yapılacak..
       />
       <Destination/>
       <ScanType/>

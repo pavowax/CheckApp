@@ -1,7 +1,8 @@
 .footer{
     padding: 4rem 6rem;
-    background-color: #A33128;
-    color: white;
+    /*background-color: #811E16;*/
+    background: linear-gradient(#fff,#3c0161); /*#0E1011*/
+    color: black;
 }
 .top{
     display: flex;
@@ -11,12 +12,12 @@
     flex-wrap: wrap;
 }
 .top i{
-    color: white;
+    color: black;
     font-size: 2rem;
     margin-left: 1rem;
 }
 .top i:hover{
-    color: black;
+    color: white;
 }
 .bottom{
     padding-top: 2rem;
@@ -36,7 +37,7 @@
 
 .bottom a{
     text-decoration: none;
-    color: #fafafa;
+    color: black;
     padding-bottom: 0.4rem;
     font-size: 1.1rem;
 }

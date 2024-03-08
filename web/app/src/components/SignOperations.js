@@ -27,7 +27,7 @@ function SignOperations() {
                         <input type="email" placeholder="Email address" required />
                         <input type="password" placeholder="Password" required />
                         <a href="/">Forgot password?</a>
-                        <input type="submit" value="Login"/>
+                        <input type="submit" value="Login" className='lognButton'/>
                     </form>
                 </div>
             </section>

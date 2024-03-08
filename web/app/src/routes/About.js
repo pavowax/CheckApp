@@ -10,9 +10,7 @@ function About() {
       <NavBar/>
       <Hero
       cName = "hero-mid"
-      heroImg = {AboutImg}
       title = "ABOUT"
-      buttonClass = "hide"
       />
       <AboutUs/>
       <Footer/>

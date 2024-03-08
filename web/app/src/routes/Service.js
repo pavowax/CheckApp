@@ -10,9 +10,7 @@ function Service() {
       <NavBar/>
       <Hero
       cName = "hero-mid"
-      heroImg = {ServiceImg}
       title = "SERVİCE"
-      buttonClass = "hide"
       />
       <ScanType/>
       <Footer/>
