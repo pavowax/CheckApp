@@ -1,7 +1,6 @@
 import React from 'react'
 import NavBar from "../components/NavBar"
 import Hero from '../components/Hero';
-import HomeImg from "../assets/u1.jpg";
 import Destination from "../components/Destination"
 import ScanType from '../components/ScanType';
 import Footer from '../components/Footer';
