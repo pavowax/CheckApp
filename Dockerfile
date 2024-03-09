@@ -3,7 +3,9 @@ FROM python:latest
 # Path: /app
 WORKDIR /app
 
-COPY . /app
+COPY . .
+
+WORKDIR /app/fenrir
 
 RUN pip install -r requirements.txt
 

@@ -9,10 +9,10 @@ import sys
 import string
 from optparse import OptionParser
 
-from waf.wafw00f.lib.asciiarts import Color
-from waf.wafw00f.lib.evillib import urlParser, waftoolsengine
-from waf.wafw00f.manager import load_plugins
-from waf.wafw00f.wafprio import wafdetectionsprio
+from pkg.waf.wafw00f.lib.asciiarts import Color
+from pkg.waf.wafw00f.lib.evillib import urlParser, waftoolsengine
+from pkg.waf.wafw00f.manager import load_plugins
+from pkg.waf.wafw00f.wafprio import wafdetectionsprio
 
 
 class WAFW00F(waftoolsengine):
