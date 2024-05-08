@@ -9,6 +9,11 @@ sys.path.append("/app")
 import internal.repository.post as postRepository
 import internal.service.post as postService
 import internal.api.post as postApi
+from flask_jwt_extended import JWTManager
+
+from datetime import timedelta
+
+ACCESS_EXPIRES = timedelta(days=1)
 
 
 class Fenrir:
@@ -17,10 +22,17 @@ class Fenrir:
         
     def initialize(self):
         self.app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@db/my-flask-app'
+        self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+        self.app.config["JWT_SECRET_KEY"] = "123dgadgkag56565SAFASGXVCASFDSAt"  # Change this!
+        self.app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
+        
+        jwt = JWTManager(self.app)
+
         self.db = SQLAlchemy(self.app)
 
-        self.redis = redis.Redis(host='redis', port=6379, db=0)
-        self.app.secret_key = secrets.token_hex(64).encode('utf-8')
+        self.redis = redis.Redis(host='redis', port=6379, db=0, decode_responses=True)
+        # self.app.secret_key = secrets.token_hex(64).encode('utf-8')
 
 
     def run(self,port = 6700):
@@ -30,8 +42,8 @@ class Fenrir:
     def init_post_api(self):
         post_repository=postRepository.Repository(self.db)
         post_repository.migrate()
-        post_service=postService.Service(post_repository,self.redis)
-        post_api=postApi.PostApi(post_service,self.app)
+        post_service=postService.Service(post_repository)
+        post_api=postApi.PostApi(post_service,self.app,self.redis)
         post_api.migrate()
 
 if __name__ == '__main__':

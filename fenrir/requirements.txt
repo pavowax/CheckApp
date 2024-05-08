@@ -7,3 +7,8 @@ requests
 PluginBase
 python-Wappalyzer
 wafw00f
+flask-jwt-extended
+# argparse
+# dnspython
+sublist3r
+

@@ -6,88 +6,91 @@ from flask.sessions import SessionMixin
 from flask import make_response
 from Wappalyzer import WebPage, Wappalyzer
 import pkg.waf.wafw00f.main as waf_script
+from pkg.utils.regex import pull_environment_and_check as regex_check
+from pkg.utils.messages import create_response
+from pkg.Sublist3r.sublist3r import main as sublist3r
+import hashlib
+from typing import Tuple
+
 
 class Service:
-    def __init__(self, repository: post.Repository, redis: Redis):
+    def __init__(self, repository: post.Repository):
         self.repository = repository
-        self.redis = redis
+        # self.redis = redis
 
     def register(self,transform_obj: transform.user_transform_object):
         if transform_obj.user_name is not None and transform_obj.password is not None and transform_obj.email is not None and transform_obj.phone_number is not None:
-            uery = self.repository.find_user_with_username(transform_obj.user_name)
+            if regex_check('username_regex',transform_obj.user_name) is False:
+                return create_response(2200)
+            elif regex_check('password_regex',transform_obj.password) is False:
+                return create_response(2201)
+            elif regex_check('email_regex',transform_obj.email) is False:
+                return create_response(2202)
+            elif regex_check('phone_number_regex',transform_obj.phone_number) is False:
+                return create_response(2203)
+            
+            uery = self.repository.find_user_with_username_email_phonenumber(transform_obj)
             if uery is None:
-                new_user = self.repository.model_user(user_name=transform_obj.user_name, password=transform_obj.password, email=transform_obj.email, phone_number=transform_obj.phone_number)
+                hashed_password = hashlib.sha256(transform_obj.password.encode()).hexdigest()
+                new_user = self.repository.model_user(user_name=transform_obj.user_name, password=hashed_password, email=transform_obj.email, phone_number=transform_obj.phone_number)
                 self.repository.create_new_db_object(new_user)
-                return messages.response(f"{messages.status.OK}",f"{messages.status.ok_message}").dictionary,f"{messages.status.OK}"
+                return create_response(100)
             else:
-                return messages.response(f"{messages.status.BadRequest}",f"{messages.response_messages.user_already_exist}").dictionary,f"{messages.status.BadRequest}"
-        else:
-            return messages.response(f"{messages.status.BadRequest}",f"{messages.response_messages.should_not_be_empty}").dictionary,f"{messages.status.BadRequest}"
-
-    def index(self,session: SessionMixin):
-        if self.redis.exists('session') and 'username' in session:
-            user_name = session['username']
-            if f"{session}"==f"{self.redis.get('session').decode('utf-8')}" and user_name is not None:
-
-                uery = self.repository.find_user_with_username(user_name)   
-                if uery is not None:
-                    return messages.response_user_data(f"{messages.status.OK}",f"{messages.status.ok_message}",{"user_id:":f"{uery.id}","user_name:":f"{uery.user_name}","email:":f"{uery.email}","role:":f"{uery.role}","phone_number:":f"{uery.phone_number}"}).dictionary,f"{messages.status.OK}"
+                if uery.user_name == transform_obj.user_name:
+                    return create_response(2004)
+                elif uery.email == transform_obj.email:
+                    return create_response(2005)
+                elif uery.phone_number == transform_obj.phone_number:
+                    return create_response(2006)
                 else:
-                    return messages.response(f"{messages.status.InternalServerError}",f"{messages.response_messages.user_not_exist}").dictionary,f"{messages.status.InternalServerError}"
-            else:
-                return messages.response(f"{messages.status.OK}",f"{messages.response_messages.unauthorized_access}").dictionary,f"{messages.status.OK}"#tekrar
+                    return create_response(2007)
         else:
-            return messages.response(f"{messages.status.OK}",f"{messages.response_messages.unauthorized_access}").dictionary,f"{messages.status.OK}"
+            return create_response(2008)
 
-    def logout(self,session: SessionMixin):
-        deleted=self.redis.delete('session')
-        session.clear()
-        if not deleted:
-            return messages.response(f"{messages.status.BadRequest}",f"{messages.status.unauthorized_message}").dictionary,f"{messages.status.BadRequest}"
-        else:
-            return messages.response(f"{messages.status.OK}",f"{messages.status.ok_message}").dictionary, f"{messages.status.OK}"
-        # if self.service.redis.exists('username'):
-        #     deleted=self.service.redis.delete('username')
-        #     if not deleted:
-        #         return messages.response(f"{messages.status.BadRequest}",f"{messages.status.unauthorized_message}").dictionary,f"{messages.status.BadRequest}"
-        #     else:
-        #         return messages.response(f"{messages.status.OK}",f"{messages.status.ok_message}").dictionary, f"{messages.status.OK}"
-        # else:
-        #     return messages.response(f"{messages.status.Unauthorized}",f"{messages.status.unauthorized_message}").dictionary,f"{messages.status.Unauthorized}"
-
-    def login(self,session: SessionMixin,user_name:str,password:str):
+    def login(self,user_name:str,password:str) ->  Tuple[bool, str]:
 
         if user_name is not None:
             uery = self.repository.find_user_with_username(user_name)
-            if uery is not None and password == uery.password:
-                
-                resp=make_response(messages.response(f"{messages.status.OK}",f"{messages.status.ok_message}").dictionary, f"{messages.status.OK}")
-                session['username'] = user_name
-                self.redis.set('session', f'{session}')
-                #resp.headers.add('Set-Cookie', f'session={session};')
-                resp.set_cookie('session', f'{self.redis.get("session").decode("utf-8")}', secure=True, httponly=True)
-                
-                return  resp
-            else:
-                return messages.response(f"{messages.status.BadRequest}",f"{messages.response_messages.wrong_username_or_password}").dictionary,f"{messages.status.BadRequest}"
-        else:
-            return messages.response(f"{messages.status.BadRequest}",f"{messages.response_messages.wrong_username_or_password}").dictionary,f"{messages.status.BadRequest}"
-        
-    def waf_test(self,address:str):
+            hashed_password = hashlib.sha256(password.encode()).hexdigest()
+            if uery is not None and hashed_password == uery.password:
 
+                return True, uery.role
+            else:
+                return False,""
+        else:
+            return False,""
+
+    def waf(self,address:str):
+        if regex_check('url_regex',address) is False:
+            return create_response(2204)
         if address is not None:
             result=waf_script.waf_ps(address)
             if result is not None:
-                return  messages.response(f"{messages.status.OK}",f"{messages.status.ok_message}",f"{result}").dictionary,f"{messages.status.OK}"
+                return  create_response(100,data=result)
             else:
-                return messages.response(f"{messages.status.InternalServerError}",f"{messages.status.internal_server_error_message}").dictionary,f"{messages.status.InternalServerError}"
+                return create_response(7107)
         else:
-            return messages.response(f"{messages.status.BadRequest}",f"{messages.response_messages.no_address_parameter}").dictionary,f"{messages.status.BadRequest}"
+            return create_response(2009)
 
-    def wappalyzer_test(self,address:str):
+    def wappalyzer(self,address:str):
+        if regex_check('url_regex',address) is False:
+            return create_response(2204)
         if address is not None:
             webpage = WebPage.new_from_url(address)
             wappalyzer = Wappalyzer.latest()
-            return messages.response(f"{messages.status.OK}",f"{messages.status.ok_message}",f"{wappalyzer.analyze_with_versions_and_categories(webpage)}").dictionary,f"{messages.status.OK}"
+            return create_response(100,data=wappalyzer.analyze(webpage))
         else:
-            return messages.response(f"{messages.status.BadRequest}",f"{messages.response_messages.no_address_parameter}").dictionary,f"{messages.status.BadRequest}"
+            return create_response(2009)
+
+
+    def sublister(self,address:str):
+        # if regex_check('url_regex',address) is False:
+        #     return create_response(2204)
+        if address is not None:
+            result=sublist3r(address, 36, ports= None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
+            if result:
+                return  create_response(100,data=result)
+            else:
+                return create_response(7107)
+        else:
+            return create_response(2009)
