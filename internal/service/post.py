@@ -9,6 +9,9 @@ import pkg.waf.wafw00f.main as waf_script
 from pkg.utils.regex import pull_environment_and_check as regex_check
 from pkg.utils.messages import create_response
 from pkg.Sublist3r.sublist3r import main as sublist3r
+from pkg.ArjunMaster.arjun import __main__ as arjun
+
+
 import hashlib
 from typing import Tuple
 
@@ -88,6 +91,38 @@ class Service:
         #     return create_response(2204)
         if address is not None:
             result=sublist3r(address, 36, ports= None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
+            if result:
+                return  create_response(100,data=result)
+            else:
+                return create_response(7107)
+        else:
+            return create_response(2009)
+        
+
+
+    def parameter(self,address:str):
+        if regex_check('url_regex',address) is False:
+            return create_response(2204)
+        if address is not None:
+            url="https://cyrops.com"
+            # wordlist="wordlist.txt"
+
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:83.0) Gecko/20100101 Firefox/83.0',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Accept-Encoding': 'gzip, deflate',
+                'Connection': 'close',
+                'Upgrade-Insecure-Requests': '1'
+            }
+
+            request={
+                'url': url,
+                'method': 'GET',
+                'headers': headers,
+            }
+            passive=True    
+            result=arjun.initialize(request,passive,True)            
             if result:
                 return  create_response(100,data=result)
             else:

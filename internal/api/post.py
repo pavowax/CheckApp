@@ -177,6 +177,20 @@ class PostApi:
             except:
                 log_error()
                 return create_response(7107)
+            
+        @self.app.route('/api/parameter')
+        @jwt_required()
+        def parameter():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address') #kontrol
+                return self.service.parameter(address)
+            except:
+                log_error()
+                return create_response(7107)
                 
     def migrate(self):
 
