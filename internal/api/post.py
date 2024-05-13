@@ -191,6 +191,21 @@ class PostApi:
             except:
                 log_error()
                 return create_response(7107)
+            
+        @self.app.route('/api/xss')
+        @jwt_required()
+        def xss():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address') #kontrol
+                return self.service.xss(address)
+            except:
+                log_error()
+                return create_response(7107)
+                
                 
     def migrate(self):
 

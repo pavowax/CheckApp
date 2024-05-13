@@ -10,7 +10,7 @@ from pkg.utils.regex import pull_environment_and_check as regex_check
 from pkg.utils.messages import create_response
 from pkg.Sublist3r.sublist3r import main as sublist3r
 from pkg.ArjunMaster.arjun import __main__ as arjun
-
+from pkg.XSStrike import xsstrike 
 
 import hashlib
 from typing import Tuple
@@ -104,7 +104,7 @@ class Service:
         if regex_check('url_regex',address) is False:
             return create_response(2204)
         if address is not None:
-            url="https://cyrops.com"
+            #url="https://cyrops.com"
             # wordlist="wordlist.txt"
 
             headers = {
@@ -117,12 +117,24 @@ class Service:
             }
 
             request={
-                'url': url,
+                'url': address,
                 'method': 'GET',
                 'headers': headers,
             }
             passive=True    
             result=arjun.initialize(request,passive,True)            
+            if result:
+                return  create_response(100,data=result)
+            else:
+                return create_response(7107)
+        else:
+            return create_response(2009)
+        
+    def xss(self,address:str):
+    # if regex_check('url_regex',address) is False:
+    #     return create_response(2204)
+        if address is not None:
+            result=xsstrike.func(address)
             if result:
                 return  create_response(100,data=result)
             else:

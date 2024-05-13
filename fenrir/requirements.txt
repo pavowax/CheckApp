@@ -13,3 +13,5 @@ flask-jwt-extended
 sublist3r
 dicttoxml
 ratelimit
+fuzzywuzzy
+tld
