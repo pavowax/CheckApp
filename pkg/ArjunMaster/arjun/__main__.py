@@ -128,11 +128,11 @@ def initialize(request, passive=False, single_url=False):
     url = request['url']
     if not url.startswith('http'):
         print('%s %s is not a valid URL' % (bad, url))
-        return 'skipped'
+        return 'skipped3'
     print('%s Probing the target for stability' % run)
     request['url'] = stable_request(url, request['headers'])
     if not request['url']:
-        return 'skipped'
+        return 'skipped1'
     else:
         fuzz = "z" + random_str(6)
         response_1 = requester(request, {fuzz[:-1]: fuzz[::-1][:-1]})
@@ -140,7 +140,7 @@ def initialize(request, passive=False, single_url=False):
             print('%s Analysing HTTP response for anomalies' % run)
         response_2 = requester(request, {fuzz[:-1]: fuzz[::-1][:-1]})
         if type(response_1) == str or type(response_2) == str:
-            return 'skipped'
+            return 'skipped2'
 
         # params from response must be extracted before factors but displayed later
         found, words_exist = heuristic(response_1, wordlist)
