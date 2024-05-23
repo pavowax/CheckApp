@@ -101,43 +101,39 @@ class Service:
 
 
     def parameter(self,address:str):
-        if regex_check('url_regex',address) is False:
-            return create_response(2204)
-        if address is not None:
-            #url="https://cyrops.com"
-            # wordlist="wordlist.txt"
 
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:83.0) Gecko/20100101 Firefox/83.0',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.5',
-                'Accept-Encoding': 'gzip, deflate',
-                'Connection': 'close',
-                'Upgrade-Insecure-Requests': '1'
-            }
+        #url="https://cyrops.com"
+        # wordlist="wordlist.txt"
 
-            request={
-                'url': address,
-                'method': 'GET',
-                'headers': headers,
-            }
-            passive=True    
-            result=arjun.initialize(request,passive,True)            
-            if result:
-                return  create_response(100,data=result)
-            else:
-                return create_response(7107)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:83.0) Gecko/20100101 Firefox/83.0',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate',
+            'Connection': 'close',
+            'Upgrade-Insecure-Requests': '1'
+        }
+
+        request={
+            'url': address,
+            'method': 'GET',
+            'headers': headers,
+        }
+        passive=True    
+
+        result= arjun.initialize(request,passive,True)
+        if isinstance(result,list):
+            return result
         else:
-            return create_response(2009)
+            return result
+     
+        
         
     def xss(self,address:str):
-    # if regex_check('url_regex',address) is False:
-    #     return create_response(2204)
-        if address is not None:
-            result=xsstrike.func(address)
-            if result:
-                return  create_response(100,data=result)
-            else:
-                return create_response(7107)
+        with open("/var/log/paramlog.txt", "a",encoding='utf-8') as file:
+            file.write(f"address:A{address}A\n")
+        result=xsstrike.func(address)
+        if result:
+            return result
         else:
-            return create_response(2009)
+            return None

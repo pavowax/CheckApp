@@ -10,15 +10,15 @@ def bruter(request, factors, params, mode='bruteforce'):
     returns anomaly detection result for a chunk of parameters
     returns list
     """
-    if mem.var['kill']:
-        return []
+    # if mem.var['kill']:
+    #     return []
     response = requester(request, params)
     conclusion = error_handler(response, factors)
     if conclusion == 'retry':
         return bruter(request, factors, params, mode=mode)
-    elif conclusion == 'kill':
-        mem.var['kill'] = True
-        return []
+    # elif conclusion == 'kill':
+    #     mem.var['kill'] = True
+    #     return []
     comparison_result = compare(response, factors, params)
     if mode == 'verify':
         return comparison_result[0]

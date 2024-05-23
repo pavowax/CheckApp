@@ -54,7 +54,7 @@ except ImportError:
     quit()
 
 mem.var = vars(args)
-mem.var['kill']=False
+# mem.var['kill']=False
 # mem.var['method'] = mem.var['method'].upper()
 
 # if mem.var['method'] != 'GET':
@@ -101,8 +101,8 @@ def narrower(request, factors, param_groups):
     for i, result in enumerate(as_completed(futures)):
         if result.result():
             anomalous_params.extend(slicer(result.result()))
-        if mem.var['kill']:
-            return anomalous_params
+        # if mem.var['kill']:
+        #     return anomalous_params
         print('%s Processing chunks: %i/%-6i' % (info, i + 1, len(param_groups)), end='\r')
     return anomalous_params
 
@@ -117,8 +117,8 @@ def initialize(request, passive=False, single_url=False):
     wordlist = set(reader(wordlist_file, mode='lines'))
     if passive:
         host = request['url']
-        if host == '-':
-            host = urlparse(request['url']).netloc
+        
+        host = urlparse(request['url']).netloc
         print('%s Collecting parameter names from passive sources for %s, it may take a while' % (run, host))
         passive_params = fetch_params(host)
         wordlist.update(passive_params)
@@ -177,8 +177,8 @@ def initialize(request, passive=False, single_url=False):
                 if compare(response_3, factors, {zzuf[:-1]: zzuf[::-1][:-1]})[0] != '':
                     print('%s Webpage is returning different content on each request. Skipping.' % bad)
                     return []
-            if mem.var['kill']:
-                return 'skipped'
+            # if mem.var['kill']:
+            #     return 'skipped'
             param_groups = confirm(param_groups, last_params)
             prev_chunk_count = len(param_groups)
             if not param_groups:

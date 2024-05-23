@@ -4,6 +4,9 @@ import internal.model.transform as transform
 from flask import Flask,request,redirect, url_for,make_response
 from redis import Redis
 from pkg.utils.messages import create_response  
+from pkg.utils.regex import pull_environment_and_check as regex_check
+import logging
+
 
 from flask_jwt_extended import create_access_token,jwt_required,get_jwt
 
@@ -12,6 +15,10 @@ from datetime import timedelta
 from fenrir.main import ACCESS_EXPIRES
 
 from pkg.utils.error_handling import log_error
+
+logger = logging.getLogger('post_api')
+
+
 class PostApi:
     def __init__(self, service: post.Service, app: Flask, redis: Redis):
         self.service = service
@@ -178,16 +185,48 @@ class PostApi:
                 log_error()
                 return create_response(7107)
             
-        @self.app.route('/api/parameter')
+        @self.app.route('/api/scanner')
         @jwt_required()
-        def parameter():
+        def scanner():
             try:
+                data={}
+                xss={}
                 claims = get_jwt()
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
-                return self.service.parameter(address)
+                address=request.args.get('address')
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)
+
+                if not address.endswith("/"):
+                    address=f"{address}/"
+                
+                result=self.service.parameter(address)
+
+                if result is not None:
+                    for i in result:
+                        with open("/var/log/paramlog.txt", "a",encoding='utf-8') as file:
+                            file.write(f"PARAMETER: {i}\n")
+                        # logger.info(f"SOLO PARAMETER: {i}\n")
+
+
+
+                if result is not None:
+                    for i in result:
+                        xss_result=self.service.xss(f"{address}?{i}=")
+                        if xss_result is not None:
+                            xss[i]=xss_result
+                        else:
+                            xss[i]="None"
+                else:
+                    xss=result
+                
+                data["xss"]=xss
+                return create_response(100,data=data)
+                
             except:
                 log_error()
                 return create_response(7107)

@@ -38,36 +38,36 @@ def crawl(scheme, host, main_url, form, blindXSS, blindPayload, headers, delay, 
                     for paramName in paramData.keys():
                         if paramName not in config.globalVariables['checkedForms'][url]:
                             config.globalVariables['checkedForms'][url].append(paramName)
-                            paramsCopy = copy.deepcopy(paramData)
-                            paramsCopy[paramName] = xsschecker
-                            response = requester(
-                                url, paramsCopy, headers, GET, delay, timeout)
-                            occurences = htmlParser(response, encoding)
-                            positions = occurences.keys()
-                            occurences = filterChecker(
-                                url, paramsCopy, headers, GET, delay, occurences, timeout, encoding)
-                            vectors = generator(occurences, response.text)
-                            if vectors:
-                                for confidence, vects in vectors.items():
-                                    try:
-                                        payload = list(vects)[0]
-                                        logger.vuln('Vulnerable webpage: %s%s%s' %
-                                                    (green, url, end))
-                                        cikti.append(f'Vulnerable webpage:{url}')
-                                        logger.vuln('Vector for %s%s%s: %s' %
-                                                    (green, paramName, end, payload))   
-                                        cikti.append(f'Vector for{paramName} : {payload} ')
-                                        break
-                                    except IndexError:
-                                        pass
-                            if blindXSS and blindPayload:
-                                paramsCopy[paramName] = blindPayload
-                                requester(url, paramsCopy, headers,
-                                          GET, delay, timeout)
-                            #data = {}
-                            i = 0
-                            for ciktis in cikti:
-                                 data[f'[{i}]'] = f'{ciktis}'
-                                 i+=1
-                            return data    
+                        paramsCopy = copy.deepcopy(paramData)
+                        paramsCopy[paramName] = xsschecker
+                        response = requester(
+                            url, paramsCopy, headers, GET, delay, timeout)
+                        occurences = htmlParser(response, encoding)
+                        positions = occurences.keys()
+                        occurences = filterChecker(
+                            url, paramsCopy, headers, GET, delay, occurences, timeout, encoding)
+                        vectors = generator(occurences, response.text)
+                        if vectors:
+                            for confidence, vects in vectors.items():
+                                try:
+                                    payload = list(vects)[0]
+                                    logger.vuln('Vulnerable webpage: %s%s%s' %
+                                                (green, url, end))
+                                    cikti.append(f'Vulnerable webpage:{url}')
+                                    logger.vuln('Vector for %s%s%s: %s' %
+                                                (green, paramName, end, payload))   
+                                    cikti.append(f'Vector for{paramName} : {payload} ')
+                                    break
+                                except IndexError:
+                                    pass
+                        if blindXSS and blindPayload:
+                            paramsCopy[paramName] = blindPayload
+                            requester(url, paramsCopy, headers,
+                                        GET, delay, timeout)
+                        #data = {}
+                        i = 0
+                        for ciktis in cikti:
+                                data[f'[{i}]'] = f'{ciktis}'
+                                i+=1
+                        return data    
 
