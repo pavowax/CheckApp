@@ -337,6 +337,27 @@ class PostApi:
                 log_error()
                 return create_response(7107)
             
+        @self.app.route('/api/reputation_threadfox')
+        @jwt_required()
+        def reputation_threadfox():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address') #kontrol
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)
+
+                result=self.service.threatfox_iocs(address)
+
+                return create_response(100,data=result)
+            except:
+                log_error()
+                return create_response(7107)
+            
         
     def migrate(self):
 

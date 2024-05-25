@@ -1,0 +1,5 @@
+{
+    "threatfox_iocs":{
+        "THREATFOX_API_URL":"https://threatfox-api.abuse.ch/api/v1/"
+    }
+}

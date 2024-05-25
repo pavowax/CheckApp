@@ -7,14 +7,17 @@ from flask import make_response
 from Wappalyzer import WebPage, Wappalyzer
 import pkg.waf.wafw00f.main as waf_script
 from pkg.utils.regex import pull_environment_and_check as regex_check
+from pkg.utils.regex import pull_environment
+import requests
+import json
+
 from pkg.utils.messages import create_response
 from pkg.Sublist3r.sublist3r import main as sublist3r
 from pkg.SSTImap.core.checks import scan_website as ssti_map
 from pkg.ArjunMaster.arjun import __main__ as arjun
 from pkg.XSStrike import xsstrike 
 import urllib.parse
-
-
+import traceback
 import hashlib
 from typing import Tuple
 
@@ -130,10 +133,36 @@ class Service:
             return result
      
         
-        
     def xss(self,address:str):
         result=xsstrike.func(address)
         if result:
             return result
         else:
             return None
+        
+    def threatfox_iocs(self,address:str):
+        parsed_url=urllib.parse.urlparse(address)
+        domain=parsed_url.netloc
+        from_variable=traceback.extract_stack()[-1].name
+
+        env_url='THREATFOX_API_URL'
+
+        url,is_false=pull_environment(env_url,from_variable)
+        if is_false is False:
+            return None
+        
+        data = { "query": "search_ioc", "search_term": f"{domain}" }
+        json_data=json.dumps(data)
+
+        response = requests.post(url, data=json_data, timeout=10)
+        if(response.status_code != 200):
+            return None
+        
+        json_response=json.loads(response.content)
+        if json_response['query_status']:
+            return json_response['query_status']
+        else:
+            return None
+            
+
+
