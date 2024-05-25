@@ -1,14 +1,14 @@
 import internal.service.post as post
 import internal.model.messages as messages
 import internal.model.transform as transform
-from flask import Flask,request,redirect, url_for,make_response
+from flask import Flask,request,redirect, url_for,make_response,jsonify
 from redis import Redis
 from pkg.utils.messages import create_response  
 from pkg.utils.regex import pull_environment_and_check as regex_check
 import logging
 
 
-from flask_jwt_extended import create_access_token,jwt_required,get_jwt
+from flask_jwt_extended import create_access_token,jwt_required,get_jwt,JWTManager
 
 from datetime import timedelta
 
@@ -24,8 +24,6 @@ class PostApi:
         self.service = service
         self.app = app
         self.redis = redis
-
-
 
         @self.app.route("/api/merhaba", methods=['POST'])
         def merhaba():
@@ -141,56 +139,15 @@ class PostApi:
             except:
                 log_error()
                 return create_response(7107)
-                
-
-        @self.app.route('/api/waf')
-        @jwt_required()
-        def waf_test():    
-            try:
-                claims = get_jwt()
-                if claims["role"] != "admin":
-                    return create_response(4104)
-                
-                address=request.args.get('address') #kontrol
-                return self.service.waf(address)
-            except:
-                log_error()
-                return create_response(7107)
-
-        @self.app.route('/api/wappalyzer')
-        @jwt_required()
-        def wappalyzer():
-            try:
-                claims = get_jwt()
-                if claims["role"] != "admin":
-                    return create_response(4104)
-                
-                address=request.args.get('address') #kontrol
-                return self.service.wappalyzer(address)
-            except:
-                log_error()
-                return create_response(7107)
             
-        @self.app.route('/api/sublist')
-        @jwt_required()
-        def sublister():
-            try:
-                claims = get_jwt()
-                if claims["role"] != "admin":
-                    return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
-                return self.service.sublister(address)
-            except:
-                log_error()
-                return create_response(7107)
-            
         @self.app.route('/api/scanner')
         @jwt_required()
         def scanner():
             try:
                 data={}
                 xss={}
+                ssti_r={}
                 claims = get_jwt()
                 if claims["role"] != "admin":
                     return create_response(4104)
@@ -216,17 +173,146 @@ class PostApi:
 
                 if result is not None:
                     for i in result:
-                        xss_result=self.service.xss(f"{address}?{i}=")
+                        if 'Submit' in result:
+                            if i != "submit" and i != "Submit":
+                                address=f"{address}?{i}&Submit="
+                            else:
+                                address=f"{address}?{i}="
+                        elif 'submit' in result:
+                            if i != "submit" and i != "Submit":
+                                address=f"{address}?{i}&submit="
+                            else:
+                                address=f"{address}?{i}="
+                        else:
+                            address=f"{address}?{i}="
+
+                        xss_result=self.service.xss(address)
                         if xss_result is not None:
                             xss[i]=xss_result
                         else:
                             xss[i]="None"
+
+                        ssti_result=self.service.ssti(address)
+                        if ssti_result is not None:
+                            ssti_r[i]=ssti_result
+                        else:
+                            ssti_r[i]="None"
                 else:
                     xss=result
-                
+
+                result_sub=self.service.sublister(address)
+                data["sublister"]=result_sub
+
+                result_wapp=self.service.wappalyzer(address)
+                data["wappalyzer"]=result_wapp
+
+                result_waf=self.service.waf(address)
+                data["waf"]=result_waf
+
                 data["xss"]=xss
+                data["ssti"]=ssti_r
                 return create_response(100,data=data)
                 
+            except:
+                log_error()
+                return create_response(7107)
+            
+        @self.app.route('/api/parameter',methods=['GET'])
+        @jwt_required()
+        def parameter():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address')
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)
+                
+                result=self.service.parameter(address)
+                return create_response(100,data=result)
+            except:
+                log_error()
+                return create_response(7107)
+            
+        @self.app.route('/api/ssti')
+        @jwt_required()
+        def ssti():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address') #kontrol
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)
+
+                result=self.service.ssti(address)
+                return create_response(100,data=result)
+            except:
+                log_error()
+                return create_response(7107)
+            
+        @self.app.route('/api/waf')
+        @jwt_required()
+        def waf_test():    
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address') #kontrol
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)                
+
+                result= self.service.waf(address)
+                return create_response(100,data=result)
+            except:
+                log_error()
+                return create_response(7107)
+
+        @self.app.route('/api/wappalyzer')
+        @jwt_required()
+        def wappalyzer():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address') #kontrol
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)
+
+                result= self.service.wappalyzer(address)
+                return create_response(100,data=result)
+            except:
+                log_error()
+                return create_response(7107)
+            
+        @self.app.route('/api/sublist')
+        @jwt_required()
+        def sublister():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address') #kontrol
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)
+
+                result= self.service.sublister(address)
+                return create_response(100,data=result)
             except:
                 log_error()
                 return create_response(7107)
@@ -240,12 +326,18 @@ class PostApi:
                     return create_response(4104)
                 
                 address=request.args.get('address') #kontrol
-                return self.service.xss(address)
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)
+
+                result= self.service.xss(address)
+                return create_response(100,data=result)
             except:
                 log_error()
                 return create_response(7107)
-                
-                
+            
+        
     def migrate(self):
 
         self.app.app_context().push()

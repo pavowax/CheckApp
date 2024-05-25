@@ -89,6 +89,8 @@ def create_response(number: int,data: dict = {}) -> Tuple[messages.response, str
     elif d3 ==3:
         if d1_2 == 0:
             return messages.response(f"{messages.other.token_invalid}", f"{data}").dictionary,f"{d4}"
+        elif d1_2 == 1:
+            return messages.response(f"{messages.other.token_expired}", f"{data}").dictionary,f"{d4}"
         else:
             return messages.response(f"{messages.other.tea_pot}", f"{data}").dictionary,f"{d4}"
     else:

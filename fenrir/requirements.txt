@@ -15,3 +15,5 @@ dicttoxml
 ratelimit
 fuzzywuzzy
 tld
+mechanize~=0.4.8
+html5lib~=1.1

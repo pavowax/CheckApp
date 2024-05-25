@@ -1,10 +1,11 @@
 import redis
-from flask import Flask 
+from flask import Flask, jsonify
 import secrets
 from flask_sqlalchemy import SQLAlchemy
 
 import sys
 sys.path.append("/app")
+from jwt import ExpiredSignatureError
 
 import internal.repository.post as postRepository
 import internal.service.post as postService
@@ -26,11 +27,11 @@ class Fenrir:
 
         self.app.config["JWT_SECRET_KEY"] = "123dgadgkag56565SAFASGXVCASFDSAt"  # Change this!
         self.app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
-        
-        jwt = JWTManager(self.app)
 
         self.db = SQLAlchemy(self.app)
 
+        self.jwt = JWTManager(self.app)
+        
         self.redis = redis.Redis(host='redis', port=6379, db=0, decode_responses=True)
         # self.app.secret_key = secrets.token_hex(64).encode('utf-8')
 

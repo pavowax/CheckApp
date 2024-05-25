@@ -9,8 +9,11 @@ import pkg.waf.wafw00f.main as waf_script
 from pkg.utils.regex import pull_environment_and_check as regex_check
 from pkg.utils.messages import create_response
 from pkg.Sublist3r.sublist3r import main as sublist3r
+from pkg.SSTImap.core.checks import scan_website as ssti_map
 from pkg.ArjunMaster.arjun import __main__ as arjun
 from pkg.XSStrike import xsstrike 
+import urllib.parse
+
 
 import hashlib
 from typing import Tuple
@@ -64,47 +67,46 @@ class Service:
             return False,""
 
     def waf(self,address:str):
-        if regex_check('url_regex',address) is False:
-            return create_response(2204)
-        if address is not None:
-            result=waf_script.waf_ps(address)
-            if result is not None:
-                return  create_response(100,data=result)
-            else:
-                return create_response(7107)
+        result=waf_script.waf_ps(address)
+        if result is not None:
+            return result
         else:
-            return create_response(2009)
+            return None
+
 
     def wappalyzer(self,address:str):
-        if regex_check('url_regex',address) is False:
-            return create_response(2204)
-        if address is not None:
-            webpage = WebPage.new_from_url(address)
-            wappalyzer = Wappalyzer.latest()
-            return create_response(100,data=wappalyzer.analyze(webpage))
+       
+        webpage = WebPage.new_from_url(address)
+        wappalyzer = Wappalyzer.latest()
+        result=wappalyzer.analyze(webpage)
+        if result:
+            return result
         else:
-            return create_response(2009)
+            return None
 
 
     def sublister(self,address:str):
-        # if regex_check('url_regex',address) is False:
-        #     return create_response(2204)
-        if address is not None:
-            result=sublist3r(address, 36, ports= None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
-            if result:
-                return  create_response(100,data=result)
-            else:
-                return create_response(7107)
+        parsed_url = urllib.parse.urlparse(address)
+        address = parsed_url.netloc
+        result=sublist3r(address, 36, ports= None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
+        if result:
+            return result
         else:
-            return create_response(2009)
+            return None
         
 
+    def ssti(self,address:str):
+        channel=ssti_map(address)
 
+        if channel is not None:
+            if channel.result:
+                return channel.result
+            else:
+                return None
+        else:
+            return None
+        
     def parameter(self,address:str):
-
-        #url="https://cyrops.com"
-        # wordlist="wordlist.txt"
-
         headers = {
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:83.0) Gecko/20100101 Firefox/83.0',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -130,8 +132,6 @@ class Service:
         
         
     def xss(self,address:str):
-        with open("/var/log/paramlog.txt", "a",encoding='utf-8') as file:
-            file.write(f"address:A{address}A\n")
         result=xsstrike.func(address)
         if result:
             return result
