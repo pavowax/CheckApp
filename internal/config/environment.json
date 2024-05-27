@@ -1,5 +1,12 @@
 {
+    "aa419":{
+        "AA419_AUTH_API_ID":"805eba84c27045d0806a10eb43ae49f4",
+        "AA419_API_URL":"https://api.aa419.org/fakesites?Domain="
+    },
     "threatfox_iocs":{
         "THREATFOX_API_URL":"https://threatfox-api.abuse.ch/api/v1/"
+    },
+    "urlhuas_urls":{
+        "URLHAUS_URLS_API_URL":"https://urlhaus-api.abuse.ch/v1/host/"   
     }
 }

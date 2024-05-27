@@ -163,6 +163,66 @@ class Service:
             return json_response['query_status']
         else:
             return None
+        
+
+
+    def urlhuas_urls(self,address:str):
+        parsed_url=urllib.parse.urlparse(address)
+        domain=parsed_url.netloc
+        from_variable=traceback.extract_stack()[-1].name
+
+        env_url='URLHAUS_URLS_API_URL'
+
+        url,is_false=pull_environment(env_url,from_variable)
+        if is_false is False:
+            return None
+        
+        # data = { "query": "search_ioc", "search_term": f"{domain}" }
+        # json_data=json.dumps(data)
+
+        form_data = {
+            'host': domain
+        }
+
+        response = requests.post(url, data=form_data, timeout=10)
+        if(response.status_code != 200):
+            return None
+        
+        json_response=json.loads(response.content)
+        if json_response['query_status']:
+            return json_response['query_status']
+        else:
+            return None
             
+    def aa419(self,address:str):
+        parsed_url=urllib.parse.urlparse(address)
+        domain=parsed_url.netloc
+        from_variable=traceback.extract_stack()[-1].name
 
+        env_url='AA419_API_URL'
+        env_authID='AA419_AUTH_API_ID'
 
+        url,is_false=pull_environment(env_url,from_variable)
+        if is_false is False:
+            return None
+        
+        authID,is_false=pull_environment(env_authID,from_variable)
+        if is_false is False:
+            return None
+
+        url=f"{url}{domain}"
+
+        headers = {
+            'Auth-API-Id':f"{authID}"
+        }
+ 
+        response = requests.get(url,headers=headers, timeout=10)
+        if(response.status_code != 200 and response.status_code != 201):
+            return f"{response.status_code}"
+
+        js_response=json.loads(response.content)
+
+        if isinstance(js_response, list) and js_response[0]['Expired'] == "0":
+            return "ok"
+        else:
+            return None

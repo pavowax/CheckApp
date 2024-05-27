@@ -7,6 +7,9 @@ from pkg.utils.messages import create_response
 from pkg.utils.regex import pull_environment_and_check as regex_check
 import logging
 
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 
 from flask_jwt_extended import create_access_token,jwt_required,get_jwt,JWTManager
 
@@ -24,6 +27,8 @@ class PostApi:
         self.service = service
         self.app = app
         self.redis = redis
+
+        self.limiter = Limiter(get_remote_address,app=self.app)
 
         @self.app.route("/api/merhaba", methods=['POST'])
         def merhaba():
@@ -98,7 +103,9 @@ class PostApi:
         #         log_error()
         #         return messages.response(f"{messages.status.InternalServerError}",f"{messages.status.internal_server_error_message}").dictionary,f"{messages.status.InternalServerError}"
 
+
         @self.app.route('/api/login', methods=['POST'])
+        @self.limiter.limit('5/minute')        
         def login():
             try:
                 user_name = request.json.get("username",None)
@@ -143,6 +150,7 @@ class PostApi:
                 
         @self.app.route('/api/scanner')
         @jwt_required()
+        @self.limiter.limit('1/minute')        
         def scanner():
             try:
                 data={}
@@ -352,6 +360,48 @@ class PostApi:
                 #     return create_response(2204)
 
                 result=self.service.threatfox_iocs(address)
+
+                return create_response(100,data=result)
+            except:
+                log_error()
+                return create_response(7107)
+            
+        @self.app.route('/api/reputation_urlhaus')
+        @jwt_required()
+        def reputation_urlhaus():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address') #kontrol
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)
+
+                result=self.service.urlhuas_urls(address)
+
+                return create_response(100,data=result)
+            except:
+                log_error()
+                return create_response(7107)
+        
+        @self.app.route('/api/reputation_aa419')
+        @jwt_required()
+        def reputation_aa419():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address') #kontrol
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)
+
+                result=self.service.aa419(address)
 
                 return create_response(100,data=result)
             except:

@@ -53,6 +53,7 @@ class regex:
 class other:
     token_invalid="Token is invalid"
     token_expired="Token is expired"
+    rate_limit="Rate limit exceeded"
     tea_pot="I'm a teapot"
 
 
