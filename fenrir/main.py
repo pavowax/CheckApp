@@ -25,7 +25,7 @@ class Fenrir:
         self.app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@db/my-flask-app'
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-        self.app.config["JWT_SECRET_KEY"] = "123dgadgkag56565SAFASGXVCASFDSAt"  # Change this!
+        self.app.config["JWT_SECRET_KEY"] = "Screen Shoot için değişitirildi."  # Change this!
         self.app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
 
         self.db = SQLAlchemy(self.app)

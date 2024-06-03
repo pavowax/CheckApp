@@ -148,11 +148,12 @@ class PostApi:
                 return create_response(7107)
             
                 
-        @self.app.route('/api/scanner')
+        @self.app.route('/api/scanner',methods=['POST'])
         @jwt_required()
-        @self.limiter.limit('1/minute')        
+        # @self.limiter.limit('1/minute')        
         def scanner():
             try:
+                parameters=None
                 data={}
                 xss={}
                 ssti_r={}
@@ -160,9 +161,19 @@ class PostApi:
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address')
+                # address=request.args.get('address')
+                content = request.json
+    
+                address = content.get('address')
+                parameters = content.get('parameters')
+
+                if isinstance(parameters, list) is False:
+                    return create_response(2303)
+                if not parameters:
+                   parameters=None
+                
                 if address is None:
-                    create_response(2009)
+                    return create_response(2009)
                 # if regex_check('url_regex',address) is False:
                 #     return create_response(2204)
 
@@ -174,33 +185,38 @@ class PostApi:
                 if result is not None:
                     for i in result:
                         with open("/var/log/paramlog.txt", "a",encoding='utf-8') as file:
-                            file.write(f"PARAMETER: {i}\n")
+                            file.write(f"PARAMETER2: {i}\n")
                         # logger.info(f"SOLO PARAMETER: {i}\n")
 
 
+                if parameters is not None:
+                    for i in parameters:
+                        result.append(i)
 
                 if result is not None:
                     for i in result:
                         if 'Submit' in result:
                             if i != "submit" and i != "Submit":
-                                address=f"{address}?{i}&Submit="
+                                i =f"{i}&Submit"
+                                new_address=f"{address}?{i}="
                             else:
-                                address=f"{address}?{i}="
+                                new_address=f"{address}?{i}="
                         elif 'submit' in result:
                             if i != "submit" and i != "Submit":
-                                address=f"{address}?{i}&submit="
+                                i =f"{i}&submit"
+                                new_address=f"{address}?{i}="
                             else:
-                                address=f"{address}?{i}="
+                                new_address=f"{address}?{i}="
                         else:
-                            address=f"{address}?{i}="
+                            new_address=f"{address}?{i}="
 
-                        xss_result=self.service.xss(address)
+                        xss_result=self.service.xss(new_address)
                         if xss_result is not None:
                             xss[i]=xss_result
                         else:
                             xss[i]="None"
 
-                        ssti_result=self.service.ssti(address)
+                        ssti_result=self.service.ssti(new_address)
                         if ssti_result is not None:
                             ssti_r[i]=ssti_result
                         else:

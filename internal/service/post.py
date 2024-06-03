@@ -97,17 +97,6 @@ class Service:
         else:
             return None
         
-
-    def ssti(self,address:str):
-        channel=ssti_map(address)
-
-        if channel is not None:
-            if channel.result:
-                return channel.result
-            else:
-                return None
-        else:
-            return None
         
     def parameter(self,address:str):
         headers = {
@@ -132,8 +121,23 @@ class Service:
         else:
             return result
      
+    def ssti(self,address:str):
+        with open("/var/log/ssti.txt", "a",encoding='utf-8') as file:
+            file.write(f"ssti: {address}\n")
+        channel=ssti_map(address)
+
+        if channel is not None:
+            if channel.result:
+                return channel.result
+            else:
+                return None
+        else:
+            return None
         
     def xss(self,address:str):
+        with open("/var/log/XSS.txt", "a",encoding='utf-8') as file:
+            file.write(f"XSS: {address}\n")
+
         result=xsstrike.func(address)
         if result:
             return result

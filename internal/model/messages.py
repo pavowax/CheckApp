@@ -34,7 +34,7 @@ class response_messages:
     phone_number_already_exist="Phone number already exist"
     should_not_be_empty="Should not be empty"
     already_looged_in="Already logged in"
-    no_address_parameter="There is no address parameter in url"
+    no_address_parameter="There is no address parameter in request data"
 class status_message:
     ok_message="OK"
     redirect_message="Redirect"
@@ -51,6 +51,7 @@ class regex:
     phone_nv="Phone number is not valid"
     url_nv="Url is not valid"
 class other:
+    not_json_array="Input is not a json array"
     token_invalid="Token is invalid"
     token_expired="Token is expired"
     rate_limit="Rate limit exceeded"

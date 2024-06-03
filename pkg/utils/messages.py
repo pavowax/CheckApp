@@ -93,6 +93,8 @@ def create_response(number: int,data: dict = {}) -> Tuple[messages.response, str
             return messages.response(f"{messages.other.token_expired}", f"{data}").dictionary,f"{d4}"
         elif d1_2 == 2:
             return messages.response(f"{messages.other.rate_limit}", f"{data}").dictionary,f"{d4}"
+        elif d1_2 == 3:
+            return messages.response(f"{messages.other.not_json_array}", f"{data}").dictionary,f"{d4}"
         else:
             return messages.response(f"{messages.other.tea_pot}", f"{data}").dictionary,f"{d4}"
     else:
