@@ -164,7 +164,10 @@ class Service:
         
         json_response=json.loads(response.content)
         if json_response['query_status']:
-            return json_response['query_status']
+            if json_response['query_status'] == "ok":
+                return json_response['query_status'],json_response['data'][0]['threat_type']
+            else:
+                return json_response['query_status'],None
         else:
             return None
         
@@ -194,7 +197,10 @@ class Service:
         
         json_response=json.loads(response.content)
         if json_response['query_status']:
-            return json_response['query_status']
+            if json_response['query_status'] == "ok":
+                return json_response['query_status'],json_response['urls'][0]['threat']
+            else:
+                return json_response['query_status'],None
         else:
             return None
             
@@ -227,6 +233,170 @@ class Service:
         js_response=json.loads(response.content)
 
         if isinstance(js_response, list) and js_response[0]['Expired'] == "0":
-            return "ok"
+            if js_response[0]['ScamType']:
+                return "ok",js_response[0]['ScamType']
+            else:
+                return "ok",None
         else:
             return None
+        
+
+    def jsonwhois(self,address:str):
+        from_variable=traceback.extract_stack()[-1].name
+
+        env_url='JSONWHOIS_API_URL'
+        env_api_key='JSONWHOIS_API_KEY'
+
+        url,is_false=pull_environment(env_url,from_variable)
+        if is_false is False:
+            return None
+        
+        api_key,is_false=pull_environment(env_api_key,from_variable)
+        if is_false is False:
+            return None
+        
+        params={"identifier":f"{address}"}
+
+        headers = {
+            'Authorization':f"Basic {api_key}"
+        }
+
+        response = requests.get(url, params=params,headers=headers, timeout=10)
+        if(response.status_code != 200):
+            return None
+        
+        json_response=json.loads(response.content)
+        return json_response
+    
+    def certspotter(self,address:str):
+        parsed_url=urllib.parse.urlparse(address)
+        domain=parsed_url.netloc
+        from_variable=traceback.extract_stack()[-1].name
+
+        env_url='CERTSPOTTER_API_URL'
+        env_api_key='CERTSPOTTER_API_KEY'
+
+        url,is_false=pull_environment(env_url,from_variable)
+        if is_false is False:
+            return None
+        
+        api_key,is_false=pull_environment(env_api_key,from_variable)
+        if is_false is False:
+            return None
+        
+        params={
+            "domain":f"{domain}",
+            "expand":"dns_names",
+            "expand":"issuer",
+            "expand":"revocation",
+            "expand":"problem_reporting",
+            "expand":"cert_der"
+        }
+
+        headers = {
+            'Authorization':f"Bearer {api_key}"
+        }
+
+        response = requests.get(url, params=params,headers=headers, timeout=10)
+        if(response.status_code != 200):
+            return None
+        
+        json_response=json.loads(response.content)
+        return json_response
+    
+
+    def securitytrails_subdomains(self,address:str):
+        parsed_url=urllib.parse.urlparse(address)
+        domain=parsed_url.netloc
+        from_variable=traceback.extract_stack()[-1].name
+
+        env_url='SECURITYTRAILS_API_URL'
+        env_api_key='SECURITYTRAILS_API_KEY'
+
+        url,is_false=pull_environment(env_url,from_variable)
+        if is_false is False:
+            return None
+        
+        api_key,is_false=pull_environment(env_api_key,from_variable)
+        if is_false is False:
+            return None
+        
+        params={
+            "children_only":f"false",
+            "include_ips":f"true"
+        }
+
+        headers = {
+            'APIKEY':f"{api_key}",
+            'Content-Type': 'application/json'
+        }
+
+        url=f"{url}{domain}/subdomains"
+
+        response = requests.get(url, params=params,headers=headers, timeout=10)
+        if(response.status_code != 200):
+            return None
+        
+        json_response=json.loads(response.content)
+        return json_response
+    
+
+    def securitytrails_dns_a(self,address:str):
+        parsed_url=urllib.parse.urlparse(address)
+        domain=parsed_url.netloc
+        from_variable=traceback.extract_stack()[-1].name
+
+        env_url='SECURITYTRAILS_DNS_API_URL'
+        env_api_key='SECURITYTRAILS_DNS_API_KEY'
+
+        url,is_false=pull_environment(env_url,from_variable)
+        if is_false is False:
+            return None
+        
+        api_key,is_false=pull_environment(env_api_key,from_variable)
+        if is_false is False:
+            return None
+
+        headers = {
+            'APIKEY':f"{api_key}",
+            'Content-Type': 'application/json'
+        }
+
+        url=f"{url}{domain}/dns/a"
+
+        response = requests.get(url,headers=headers, timeout=10)
+        if(response.status_code != 200):
+            return None
+        
+        json_response=json.loads(response.content)
+        return json_response
+    
+    def securitytrails_dns_mx(self,address:str):
+        parsed_url=urllib.parse.urlparse(address)
+        domain=parsed_url.netloc
+        from_variable=traceback.extract_stack()[-1].name
+
+        env_url='SECURITYTRAILS_DNS_API_URL'
+        env_api_key='SECURITYTRAILS_DNS_API_KEY'
+
+        url,is_false=pull_environment(env_url,from_variable)
+        if is_false is False:
+            return None
+        
+        api_key,is_false=pull_environment(env_api_key,from_variable)
+        if is_false is False:
+            return None
+
+        headers = {
+            'APIKEY':f"{api_key}",
+            'Content-Type': 'application/json'
+        }
+
+        url=f"{url}{domain}/dns/mx"
+
+        response = requests.get(url,headers=headers, timeout=10)
+        if(response.status_code != 200):
+            return None
+        
+        json_response=json.loads(response.content)
+        return json_response

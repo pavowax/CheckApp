@@ -365,6 +365,7 @@ class PostApi:
         @jwt_required()
         def reputation_threadfox():
             try:
+                data={}
                 claims = get_jwt()
                 if claims["role"] != "admin":
                     return create_response(4104)
@@ -376,8 +377,11 @@ class PostApi:
                 #     return create_response(2204)
 
                 result=self.service.threatfox_iocs(address)
-
-                return create_response(100,data=result)
+                data['query_status']=result[0]
+                data['threat_type']=None
+                if result[1] is not None:
+                    data['threat_type']=result[1]
+                return create_response(100,data=data)
             except:
                 log_error()
                 return create_response(7107)
@@ -386,6 +390,7 @@ class PostApi:
         @jwt_required()
         def reputation_urlhaus():
             try:
+                data={}
                 claims = get_jwt()
                 if claims["role"] != "admin":
                     return create_response(4104)
@@ -397,8 +402,11 @@ class PostApi:
                 #     return create_response(2204)
 
                 result=self.service.urlhuas_urls(address)
-
-                return create_response(100,data=result)
+                data['query_status']=result[0]
+                data['threat']=None
+                if result[1] is not None:
+                    data['threat']=result[1]
+                return create_response(100,data=data)
             except:
                 log_error()
                 return create_response(7107)
@@ -407,6 +415,7 @@ class PostApi:
         @jwt_required()
         def reputation_aa419():
             try:
+                data={}
                 claims = get_jwt()
                 if claims["role"] != "admin":
                     return create_response(4104)
@@ -419,11 +428,122 @@ class PostApi:
 
                 result=self.service.aa419(address)
 
+                data['query_status']=result[0]
+                data['ScamType']=None
+                if result[1] is not None:
+                    data['threat']=result[1]
+
+                return create_response(100,data=data)
+            except:
+                log_error()
+                return create_response(7107)
+        
+        
+        @self.app.route('/api/passive_whois')
+        @jwt_required()
+        def passive_whois():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address') #kontrol
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)
+
+                result=self.service.jsonwhois(address)
+
                 return create_response(100,data=result)
             except:
                 log_error()
                 return create_response(7107)
             
+        @self.app.route('/api/passive_ssl')
+        @jwt_required()
+        def ssl():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address') #kontrol
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)
+
+                result=self.service.certspotter(address)
+
+                return create_response(100,data=result)
+            except:
+                log_error()
+                return create_response(7107)
+            
+        @self.app.route('/api/passive_dns_a')
+        @jwt_required()
+        def passive_dns_a():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address') #kontrol
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)
+
+                result=self.service.securitytrails_dns_a(address)
+
+                return create_response(100,data=result)
+            except:
+                log_error()
+                return create_response(7107)
+            
+        @self.app.route('/api/passive_dns_mx')
+        @jwt_required()
+        def passive_dns_mx():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address') #kontrol
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)
+
+                result=self.service.securitytrails_dns_mx(address)
+
+                return create_response(100,data=result)
+            except:
+                log_error()
+                return create_response(7107)
+            
+        @self.app.route('/api/passive_subdomains')
+        @jwt_required()
+        def passive_subdomains():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address') #kontrol
+                if address is None:
+                    create_response(2009)
+                # if regex_check('url_regex',address) is False:
+                #     return create_response(2204)
+
+                result=self.service.securitytrails_subdomains(address)
+
+                return create_response(100,data=result)
+            except:
+                log_error()
+                return create_response(7107)
+        
         
     def migrate(self):
 

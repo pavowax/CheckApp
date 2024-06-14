@@ -8,5 +8,25 @@
     },
     "urlhuas_urls":{
         "URLHAUS_URLS_API_URL":"https://urlhaus-api.abuse.ch/v1/host/"   
+    },
+    "jsonwhois":{
+        "JSONWHOIS_API_URL":"https://jsonwhoisapi.com/api/v1/whois",
+        "JSONWHOIS_API_KEY":"NDEwOTU1OTgzOmF3a0wxU2JheHctMXdHb3N6WlNyZGc="
+    },
+    "securitytrails_subdomains": {
+        "SECURITYTRAILS_API_URL":"https://api.securitytrails.com/v1/domain/",
+        "SECURITYTRAILS_API_KEY":"03nTO9ve8rjBy75_ZJkh4S4rWlo5gFwR"
+    },
+    "securitytrails_dns_a":{
+        "SECURITYTRAILS_DNS_API_URL":"https://api.securitytrails.com/v1/history/",
+        "SECURITYTRAILS_DNS_API_KEY":"03nTO9ve8rjBy75_ZJkh4S4rWlo5gFwR"
+    },
+    "securitytrails_dns_mx":{
+        "SECURITYTRAILS_DNS_API_URL":"https://api.securitytrails.com/v1/history/",
+        "SECURITYTRAILS_DNS_API_KEY":"03nTO9ve8rjBy75_ZJkh4S4rWlo5gFwR"
+    },
+    "certspotter":{
+        "CERTSPOTTER_API_URL":"https://api.certspotter.com/v1/issuances",
+        "CERTSPOTTER_API_KEY":"k54517_h8jIFFZcpiiV785wMGNa"
     }
 }
