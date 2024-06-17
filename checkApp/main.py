@@ -17,7 +17,7 @@ from datetime import timedelta
 ACCESS_EXPIRES = timedelta(days=1)
 
 
-class Fenrir:
+class checkApp:
     def __init__(self):
         self.app = Flask(__name__)
         
@@ -48,7 +48,7 @@ class Fenrir:
         post_api.migrate()
 
 if __name__ == '__main__':
-    a=Fenrir()
+    a=checkApp()
     a.initialize()
     a.init_post_api()
     a.run()

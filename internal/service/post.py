@@ -16,11 +16,17 @@ from pkg.Sublist3r.sublist3r import main as sublist3r
 from pkg.SSTImap.core.checks import scan_website as ssti_map
 from pkg.ArjunMaster.arjun import __main__ as arjun
 from pkg.XSStrike import xsstrike 
+from pkg.sqli. dsss import scan_page as sqli_scan
 import urllib.parse
 import traceback
 import hashlib
 from typing import Tuple
 
+import threading
+from concurrent.futures import ThreadPoolExecutor
+
+
+print_lock = threading.Lock()
 
 class Service:
     def __init__(self, repository: post.Repository):
@@ -81,7 +87,7 @@ class Service:
        
         webpage = WebPage.new_from_url(address)
         wappalyzer = Wappalyzer.latest()
-        result=wappalyzer.analyze(webpage)
+        result=wappalyzer.analyze_with_versions_and_categories(webpage)
         if result:
             return result
         else:
@@ -122,8 +128,8 @@ class Service:
             return result
      
     def ssti(self,address:str):
-        with open("/var/log/ssti.txt", "a",encoding='utf-8') as file:
-            file.write(f"ssti: {address}\n")
+        # with open("/var/log/ssti.txt", "a",encoding='utf-8') as file:
+        #     file.write(f"ssti: {address}\n")
         channel=ssti_map(address)
 
         if channel is not None:
@@ -135,12 +141,16 @@ class Service:
             return None
         
     def xss(self,address:str):
-        with open("/var/log/XSS.txt", "a",encoding='utf-8') as file:
-            file.write(f"XSS: {address}\n")
-
         result=xsstrike.func(address)
         if result:
             return result
+        else:
+            return None
+        
+    def sqli(self,address:str):
+        result=sqli_scan(address)
+        if result[0]:
+            return result[1]
         else:
             return None
         
@@ -228,7 +238,7 @@ class Service:
  
         response = requests.get(url,headers=headers, timeout=10)
         if(response.status_code != 200 and response.status_code != 201):
-            return f"{response.status_code}"
+            return None
 
         js_response=json.loads(response.content)
 
@@ -400,3 +410,171 @@ class Service:
         
         json_response=json.loads(response.content)
         return json_response
+    
+    def scanner(self,address,user_parameter,passive,active,reputation):
+        data={}
+        def task1(address,passive):
+            with print_lock:    
+                with open("/var/log/threads.txt", "a",encoding='utf-8') as file:
+                    file.write(f"from task1 thread num: {threading.get_ident()}\n")
+            passiv_dns_a={}
+            passiv_dns_mx={}
+            passiv_subdomains={}
+            passiv_whois={}
+            passiv_ssl={}
+            if passive:
+                passiv_dns_a=self.securitytrails_dns_a(address)
+                passiv_dns_mx=self.securitytrails_dns_mx(address)
+                passiv_subdomains=self.securitytrails_subdomains(address)
+                passiv_whois=self.jsonwhois(address)
+                passiv_ssl=self.certspotter(address)
+
+                data["passive_dns_a"]=passiv_dns_a
+                data["passive_dns_mx"]=passiv_dns_mx
+                data["passive_subdomains"]=passiv_subdomains
+                data["passive_whois"]=passiv_whois
+                data["passive_ssl"]=passiv_ssl
+        
+        def task2(address,reputation):
+            with print_lock:    
+                with open("/var/log/threads.txt", "a",encoding='utf-8') as file:
+                    file.write(f"from task2 thread num: {threading.get_ident()}\n")
+            if reputation:
+                reput_aa419={}
+                reput_urlhaus={}
+                reput_threadfox={}
+
+                result_aa419=self.aa419(address)
+
+                
+                if result_aa419 is None:
+                    reput_aa419['query_status']="no_results"
+                    reput_aa419['ScamType']=None
+                else:
+                    reput_aa419['query_status']=result_aa419[0]
+                    reput_aa419['ScamType']=None
+                    if result_aa419[1] is not None:
+                        reput_aa419['ScamType']=result_aa419[1]
+
+                result_urlhaus=self.urlhuas_urls(address)
+                if result_urlhaus is None:
+                    reput_urlhaus['query_status']="no_results"
+                    reput_urlhaus['threat']=None
+                else:
+                    reput_urlhaus['query_status']=result_urlhaus[0]
+                    reput_urlhaus['threat']=None
+                    if result_urlhaus[1] is not None:
+                        reput_urlhaus['threat']=result_urlhaus[1]
+                
+                result_threadfox=self.threatfox_iocs(address)
+                if result_threadfox is None:
+                    reput_threadfox['query_status']="no_results"
+                    reput_threadfox['threat_type']=None
+                else:
+                    reput_threadfox['query_status']=result_threadfox[0]
+                    reput_threadfox['threat_type']=None
+                    if result_threadfox[1] is not None:
+                        reput_threadfox['threat_type']=result_threadfox[1]
+                
+                data["reputation_aa419"]=reput_aa419
+                data["reputation_urlhaus"]=reput_urlhaus
+                data["reputation_threadfox"]=reput_threadfox
+
+        def task3(address,user_parameter,active):
+            with print_lock:    
+                with open("/var/log/threads.txt", "a",encoding='utf-8') as file:
+                    file.write(f"from task3 thread num: {threading.get_ident()}\n")
+            if active:
+                xss={}
+                ssti_r={}
+                sqli={}
+                if isinstance(user_parameter, list) is False:
+                    return create_response(2303)
+                if not user_parameter:
+                    user_parameter=None
+
+                # if not address.endswith("/"):
+                #     address=f"{address}/"
+                
+                result_parameter=self.parameter(address)
+
+                if user_parameter is not None:
+                    for i in user_parameter:
+                        result_parameter.append(i)
+
+                if result_parameter is not None:
+                    with ThreadPoolExecutor(max_workers=8) as executor:
+                        [executor.submit(self.paralel_executer,address, item,result_parameter,xss,ssti_r,sqli) for item in result_parameter]
+                else:
+                    xss=None
+                    ssti_r=None
+                    sqli=None
+
+                result_sub=self.sublister(address)
+                data["sublister"]=result_sub
+
+                result_wapp=self.wappalyzer(address)
+                data["wappalyzer"]=result_wapp
+
+                result_waf=self.waf(address)
+                data["waf"]=result_waf
+
+                data["xss"]=xss
+                data["ssti"]=ssti_r
+                data["sqli"]=sqli
+
+        thread1 = threading.Thread(target=task1,args=(address,passive,))
+        thread2 = threading.Thread(target=task2,args=(address,reputation,))
+        thread3 = threading.Thread(target=task3, args=(address,user_parameter,active,))
+
+        thread1.start()
+        thread2.start()
+        thread3.start()
+
+        thread1.join()
+        thread2.join()
+        thread3.join()
+        
+        return data
+
+
+
+
+    def paralel_executer(self,address,parameter,result_parameter,xss,ssti_r,sqli):
+        with print_lock:    
+            with open("/var/log/threads.txt", "a",encoding='utf-8') as file:
+                file.write(f"num: {threading.get_ident()}\n")
+
+        
+        if 'Submit' in result_parameter:
+            if parameter != "submit" and parameter != "Submit":
+                parameter =f"{parameter}&Submit"
+                new_address=f"{address}?{parameter}="
+            else:
+                new_address=f"{address}?{parameter}="
+        elif 'submit' in result_parameter:
+            if parameter != "submit" and parameter != "Submit":
+                parameter =f"{parameter}&submit"
+                new_address=f"{address}?{parameter}="
+            else:
+                new_address=f"{address}?{parameter}="
+        else:
+            new_address=f"{address}?{parameter}="
+
+        xss_result=self.xss(new_address)
+        if xss_result is not None:
+            xss[parameter]=xss_result
+        else:
+            xss[parameter]="None"
+
+        ssti_result=self.ssti(new_address)
+        if ssti_result is not None:
+            ssti_r[parameter]=ssti_result
+        else:
+            ssti_r[parameter]="None"
+        
+        sqli_result=self.sqli(new_address)
+        if sqli_result is not None:
+            sqli[parameter]=sqli_result
+        else:
+            sqli[parameter]="None"

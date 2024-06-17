@@ -5,7 +5,7 @@ WORKDIR /app
 
 COPY . .
 
-WORKDIR /app/fenrir
+WORKDIR /app/checkApp
 
 RUN pip install -r requirements.txt
 
