@@ -58,24 +58,40 @@ def print_injection_summary(channel):
     else:
         writing = 'no'
 
-    result =f"""SSTImap identified the following injection point:
+#     result =f"""SSTImap identified the following injection point:
 
-  {channel.injs[channel.inj_idx]['field']} parameter: {channel.injs[channel.inj_idx]['param']}
-  Engine: {channel.data.get('engine').capitalize()}
-  Injection: {prefix}{wrapper}{suffix}
-  Context: {'text' if (not prefix and not suffix) else 'code'}
-  OS: {channel.data.get('os', 'undetected')}
-  Technique: {'blind' if channel.data.get('blind') else 'render'}
-  Capabilities:
+#   {channel.injs[channel.inj_idx]['field']} parameter: {channel.injs[channel.inj_idx]['param']} 
+#   Engine: {channel.data.get('engine').capitalize()}
+#   Injection: {prefix}{wrapper}{suffix}
+#   Context: {'text' if (not prefix and not suffix) else 'code'}
+#   OS: {channel.data.get('os', 'undetected')}
+#   Technique: {'blind' if channel.data.get('blind') else 'render'}
+#   Capabilities:
 
-    Shell command execution: {execution}
-    Bind and reverse shell: {f'no' if not channel.data.get('bind_shell') else f'ok'}
-    File write: {writing}
-    File read: {f'no' if not channel.data.get('read') else f'ok'}
-    Code evaluation: {evaluation}
-"""
+#     Shell command execution: {execution}
+#     Bind and reverse shell: {f'no' if not channel.data.get('bind_shell') else f'ok'}
+#     File write: {writing}
+#     File read: {f'no' if not channel.data.get('read') else f'ok'}
+#     Code evaluation: {evaluation}
+# """
+    result ={ 
+        '[0]': f'SSTImap identified the following injection point: {channel.injs[channel.inj_idx]["field"]} parameter: {channel.injs[channel.inj_idx]["param"]}',
+        '[1]': f'Engine: {channel.data.get("engine").capitalize()}',
+        '[2]': f'Injection: {prefix}{wrapper}{suffix}',
+        '[3]': f'Context: {"text" if (not prefix and not suffix) else "code"}',
+        '[4]': f'OS: {channel.data.get("os", "undetected")}',
+        '[5]': f'Technique: {"blind" if channel.data.get("blind") else "render"}',
+        '[6]': { # Capabilities
+            '[7]': f'Shell command execution: {execution}',
+            '[8]': f'Bind and reverse shell: {"no" if not channel.data.get("bind_shell") else "ok"}',
+            '[9]': f'File write: {writing}',
+            '[10]': f'File read: {"no" if not channel.data.get("read") else "ok"}',
+            '[11]': f'Code evaluation: {evaluation}'
+        }
+    }
     channel.result = result
     log.log(21,result )
+    return result
     
 
 

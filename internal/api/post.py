@@ -15,9 +15,10 @@ from flask_jwt_extended import create_access_token,jwt_required,get_jwt,JWTManag
 
 from datetime import timedelta
 
-from fenrir.main import ACCESS_EXPIRES
+from checkApp.main import ACCESS_EXPIRES
 
 from pkg.utils.error_handling import log_error
+
 
 logger = logging.getLogger('post_api')
 
@@ -57,6 +58,7 @@ class PostApi:
         @jwt_required(optional=True)
         def after_request(response):
             try:
+                
                 claims = get_jwt()
                 if claims and self.redis.get(claims["jti"]) is None:
                     if claims["fresh"] is False:
@@ -67,17 +69,14 @@ class PostApi:
                         self.redis.set(jti, "", ex=ACCESS_EXPIRES)
                     else:
                         pass
-
+                
                 return response
-            except:
+            except: 
                 log_error()
                 response.status_code = f"{500}"
-                response.data= messages.response(f"{messages.status.InternalServerError}",{}).dictionary
+                # response.data= messages.response(f"{messages.status.InternalServerError}",{}).dictionary
+                response.data = jsonify({"data":"{}","message": "Internal Server Error"}).get_data()
                 return response
-
-
-
-
 
         @self.app.route("/api/register", methods=['POST'])
         def register():
@@ -93,16 +92,6 @@ class PostApi:
             except:
                 log_error()
                 return create_response(7107)
-       
-       
-        # @self.app.route('/api')
-        # def home():
-        #     try:
-        #         return redirect(url_for('/api/index'))
-        #     except:
-        #         log_error()
-        #         return messages.response(f"{messages.status.InternalServerError}",f"{messages.status.internal_server_error_message}").dictionary,f"{messages.status.InternalServerError}"
-
 
         @self.app.route('/api/login', methods=['POST'])
         @self.limiter.limit('5/minute')        
@@ -150,91 +139,28 @@ class PostApi:
                 
         @self.app.route('/api/scanner',methods=['POST'])
         @jwt_required()
-        # @self.limiter.limit('1/minute')        
+        @self.limiter.limit('2/minute')        
         def scanner():
             try:
-                parameters=None
-                data={}
-                xss={}
-                ssti_r={}
+                
                 claims = get_jwt()
                 if claims["role"] != "admin":
                     return create_response(4104)
-                
-                # address=request.args.get('address')
+
                 content = request.json
-    
                 address = content.get('address')
                 parameters = content.get('parameters')
+                passive=content.get('passive')
+                active=content.get('active')
+                reputation=content.get('reputation')
 
-                if isinstance(parameters, list) is False:
-                    return create_response(2303)
-                if not parameters:
-                   parameters=None
-                
                 if address is None:
                     return create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)
-
-                if not address.endswith("/"):
-                    address=f"{address}/"
                 
-                result=self.service.parameter(address)
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
 
-                if result is not None:
-                    for i in result:
-                        with open("/var/log/paramlog.txt", "a",encoding='utf-8') as file:
-                            file.write(f"PARAMETER2: {i}\n")
-                        # logger.info(f"SOLO PARAMETER: {i}\n")
-
-
-                if parameters is not None:
-                    for i in parameters:
-                        result.append(i)
-
-                if result is not None:
-                    for i in result:
-                        if 'Submit' in result:
-                            if i != "submit" and i != "Submit":
-                                i =f"{i}&Submit"
-                                new_address=f"{address}?{i}="
-                            else:
-                                new_address=f"{address}?{i}="
-                        elif 'submit' in result:
-                            if i != "submit" and i != "Submit":
-                                i =f"{i}&submit"
-                                new_address=f"{address}?{i}="
-                            else:
-                                new_address=f"{address}?{i}="
-                        else:
-                            new_address=f"{address}?{i}="
-
-                        xss_result=self.service.xss(new_address)
-                        if xss_result is not None:
-                            xss[i]=xss_result
-                        else:
-                            xss[i]="None"
-
-                        ssti_result=self.service.ssti(new_address)
-                        if ssti_result is not None:
-                            ssti_r[i]=ssti_result
-                        else:
-                            ssti_r[i]="None"
-                else:
-                    xss=result
-
-                result_sub=self.service.sublister(address)
-                data["sublister"]=result_sub
-
-                result_wapp=self.service.wappalyzer(address)
-                data["wappalyzer"]=result_wapp
-
-                result_waf=self.service.waf(address)
-                data["waf"]=result_waf
-
-                data["xss"]=xss
-                data["ssti"]=ssti_r
+                data=self.service.scanner(address,parameters,passive,active,reputation)
                 return create_response(100,data=data)
                 
             except:
@@ -252,8 +178,9 @@ class PostApi:
                 address=request.args.get('address')
                 if address is None:
                     create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)
+
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
                 
                 result=self.service.parameter(address)
                 return create_response(100,data=result)
@@ -269,18 +196,41 @@ class PostApi:
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
+                address=request.args.get('address')
                 if address is None:
                     create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)
 
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
+                
                 result=self.service.ssti(address)
                 return create_response(100,data=result)
             except:
                 log_error()
                 return create_response(7107)
             
+
+        @self.app.route('/api/sqli')
+        @jwt_required()
+        def sqli():
+            try:
+                claims = get_jwt()
+                if claims["role"] != "admin":
+                    return create_response(4104)
+                
+                address=request.args.get('address')
+                if address is None:
+                    create_response(2009)
+
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
+                
+                result=self.service.sqli(address)
+                return create_response(100,data=result)
+            except:
+                log_error()
+                return create_response(7107)
+    
         @self.app.route('/api/waf')
         @jwt_required()
         def waf_test():    
@@ -289,12 +239,13 @@ class PostApi:
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
+                address=request.args.get('address')
                 if address is None:
                     create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)                
-
+                
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
+                
                 result= self.service.waf(address)
                 return create_response(100,data=result)
             except:
@@ -309,12 +260,13 @@ class PostApi:
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
+                address=request.args.get('address')
                 if address is None:
                     create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)
 
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
+                
                 result= self.service.wappalyzer(address)
                 return create_response(100,data=result)
             except:
@@ -329,11 +281,12 @@ class PostApi:
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
+                address=request.args.get('address')
                 if address is None:
                     create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)
+
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
 
                 result= self.service.sublister(address)
                 return create_response(100,data=result)
@@ -349,11 +302,12 @@ class PostApi:
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
+                address=request.args.get('address')
                 if address is None:
                     create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)
+
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
 
                 result= self.service.xss(address)
                 return create_response(100,data=result)
@@ -370,11 +324,12 @@ class PostApi:
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
+                address=request.args.get('address')
                 if address is None:
                     create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)
+
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
 
                 result=self.service.threatfox_iocs(address)
                 data['query_status']=result[0]
@@ -395,11 +350,12 @@ class PostApi:
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
+                address=request.args.get('address')
                 if address is None:
                     create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)
+
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
 
                 result=self.service.urlhuas_urls(address)
                 data['query_status']=result[0]
@@ -420,18 +376,19 @@ class PostApi:
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
+                address=request.args.get('address')
                 if address is None:
                     create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)
+
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
 
                 result=self.service.aa419(address)
 
                 data['query_status']=result[0]
                 data['ScamType']=None
                 if result[1] is not None:
-                    data['threat']=result[1]
+                    data['ScamType']=result[1]
 
                 return create_response(100,data=data)
             except:
@@ -447,11 +404,12 @@ class PostApi:
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
+                address=request.args.get('address')
                 if address is None:
                     create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)
+
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
 
                 result=self.service.jsonwhois(address)
 
@@ -468,11 +426,12 @@ class PostApi:
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
+                address=request.args.get('address')
                 if address is None:
                     create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)
+
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
 
                 result=self.service.certspotter(address)
 
@@ -489,11 +448,12 @@ class PostApi:
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
+                address=request.args.get('address')
                 if address is None:
                     create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)
+                
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
 
                 result=self.service.securitytrails_dns_a(address)
 
@@ -510,12 +470,13 @@ class PostApi:
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
+                address=request.args.get('address')
                 if address is None:
                     create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)
 
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
+                
                 result=self.service.securitytrails_dns_mx(address)
 
                 return create_response(100,data=result)
@@ -531,11 +492,12 @@ class PostApi:
                 if claims["role"] != "admin":
                     return create_response(4104)
                 
-                address=request.args.get('address') #kontrol
+                address=request.args.get('address')
                 if address is None:
                     create_response(2009)
-                # if regex_check('url_regex',address) is False:
-                #     return create_response(2204)
+
+                if regex_check('url_regex',address) is False:
+                    return create_response(2204)
 
                 result=self.service.securitytrails_subdomains(address)
 
