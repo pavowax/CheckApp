@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import "./HeroStyle.css"
 import axios from 'axios';
-// import { useHistory } from 'react-router-dom';  // useHistory hook'unu import edin
+import { useNavigate } from 'react-router-dom';  // useHistory hook'unu import edin
 
 
 
@@ -13,7 +13,7 @@ function Hero(props) {
   const [reputation, setReputation] = useState(false);
 
   const [loading, setLoading] = useState(false);  // Overlay kontrolü için yeni state
-  // const history = useHistory();  // history objesini alın
+  const navigate = useNavigate();  // history objesini alın
 
 
   const handleSubmit = async (event) => {
@@ -36,17 +36,17 @@ function Hero(props) {
     setLoading(true);  // Overlay'i göster
     try {
       const response = await axios.post('http://localhost/api/scanner', sendData, config);
-      console.log(response.data);
-      console.log(response.data.message);
-      console.log(response.data.data);
-      window.kerem = (response.data.data);
+      const data = response.data.data.replaceAll(`'`, `"`).replaceAll("None", "null").replaceAll("True", "true").replaceAll("False", "false");
+      console.log(data);
+      window.kerem = data;
+      const parsedData = JSON.parse(data);
+
       if (response.data.message === 'OK') {
         // Yanıt alındıktan sonra Result sayfasına yönlendirme yapın
-        // history.push({
-        //   pathname: '/result',
-        //   state: { response: response.data }  // response'u state olarak gönderin
-        // });
+        navigate('/result', { state: { data: parsedData } });
       }
+      else
+        alert("Not found!")
     } catch (error) {
       console.error(error);
     } finally {
@@ -84,9 +84,9 @@ function Hero(props) {
           <i className="search-icon fa-solid fa-magnifying-glass"></i>
           <input className='search-input' type='text' name='search-bar' id='search-bar' value={address} onChange={handleAddressChange} />
           <input className='search-input-2' type='text' name='search-bar-2' id='search-bar-2' value={parameters} onChange={handleParametersChange} />
-          <input id="active-checkbox" type="checkbox" checked={active} onChange={handleActiveChange} /><label for="active-checkbox">Active</label>
-          <input id="passive-checkbox" type="checkbox" checked={passive} onChange={handlePassiveChange} /><label for="passive-checkbox">Passive</label>
-          <input id="reputation-checkbox" type="checkbox" checked={reputation} onChange={handleReputationChange} /><label for="reputation-checkbox">Reputation</label>
+          <input className="active-checkbox" id="active-checkbox" type="checkbox" checked={active} onChange={handleActiveChange} /><label className="active-checkbox" for="active-checkbox">Active</label>
+          <input className="passive-checkbox" id="passive-checkbox" type="checkbox" checked={passive} onChange={handlePassiveChange} /><label className="passive-checkbox" for="passive-checkbox">Passive</label>
+          <input className="reputation-checkbox" id="reputation-checkbox" type="checkbox" checked={reputation} onChange={handleReputationChange} /><label className="reputation-checkbox" for="reputation-checkbox">Reputation</label>
           <button className='search-button' type='submit'>Search</button>
         </form>
       </div>

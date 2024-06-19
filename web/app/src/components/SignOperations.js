@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';  // useHistory hook'unu import edin
+
 
 function SignOperations() {
 
@@ -7,6 +9,8 @@ function SignOperations() {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();  // history objesini alın
+
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -24,6 +28,7 @@ function SignOperations() {
       }
       console.log(token);
       setIsLoggedIn(true);
+      navigate('/', { state: { isLoggedIn } });
       setMessage('Login successful!');
     } catch (error) {
       setMessage('Login failed: Invalid credentials');

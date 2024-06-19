@@ -1,0 +1,11 @@
+.result {
+    text-align: start;
+}
+
+.result ul {
+
+}
+
+.result ul li {
+    list-style: circle;
+}

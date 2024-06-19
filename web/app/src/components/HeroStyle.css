@@ -89,16 +89,17 @@ img {
 .search {
     --padding: 24px;
 
-    width: max-content;
+    width: 450px;
+    height: 230px;
     display: flex;
     align-items: center;
     padding: var(--padding);
-    border-radius: 28px;
+    border-radius: 20px;
     background: #f3f3f3f3;
     transition: box-shadow 0.25s;
     position: relative;
     left: 60%;
-    top: 33%;
+    top: 22%;
 }
 
 .search:focus-within {
@@ -107,20 +108,60 @@ img {
 
 .search-input {
     font-size: 16px;
+    color: rgb(0, 0, 0);
+    margin-left: var(--padding);
+    outline: none;
+    border: none;
+    background: blue;
+    width: max-content;
+    height: 50px;
+    position: relative;
+    top: -35%;
+
+}
+.search-input-2{
+    background: black;
+    font-size: 16px;
     color: black;
     margin-left: var(--padding);
     outline: none;
     border: none;
-    background: transparent;
-    width: 400px;
+    background: red;
+    width: max-content;
     height: 50px;
+    position: relative;
+    top: -1%;
+    left: -64%;
 }
 
 .search-input::placeholder,
 .search-icon {
     color: rgba(0, 0, 0, 0.5);
 }
-
+.active-checkbox{
+    position: relative;
+    left: -500px;
+    top: 60px;
+}
+.passive-checkbox{
+    position: relative;
+    left: -500px;
+    top: 60px;
+}
+.reputation-checkbox{
+    position: relative;
+    left: -500px;
+    top: 60px;
+}
+.search-button{
+    position: relative;
+    left: -460px;
+    top: -10px;
+    width: 550px;
+    height: 60px;
+    background-color: #3c0161;
+    color: white;
+}
 @media screen and (max-width: 555px) {
     .hero-text h1 {
         padding: 10px 20px;

@@ -56,7 +56,7 @@ def crawl(scheme, host, main_url, form, blindXSS, blindPayload, headers, delay, 
                                     cikti.append(f'Vulnerable webpage : {url}')
                                     logger.vuln('Vector for %s%s%s: %s' %
                                                 (green, paramName, end, payload))   
-                                    cikti.append(f"Vector for '{paramName}' : {payload} ")
+                                    cikti.append(f'Vector for {paramName} : {payload} ')
                                     break
                                 except IndexError:
                                     pass
