@@ -40,10 +40,16 @@ function Hero(props) {
       console.log(data);
       window.kerem = data;
       const parsedData = JSON.parse(data);
+      const styledData = Object.keys(parsedData).reduce((acc, key) => {
+        if (key.includes("reputation_")) acc.reputation = { ...acc.reputation, [key]: parsedData[key] }
+        else if (key.includes("passive_")) acc.passive = { ...acc.passive, [key]: parsedData[key] }
+        else acc.active = { ...acc.active, [key]: parsedData[key] }
+        return acc;
+      }, { active: {}, passive: {}, reputation: {} });
 
       if (response.data.message === 'OK') {
         // Yanıt alındıktan sonra Result sayfasına yönlendirme yapın
-        navigate('/result', { state: { data: parsedData } });
+        navigate('/result', { state: { data: styledData } });
       }
       else
         alert("Not found!")

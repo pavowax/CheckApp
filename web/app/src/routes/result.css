@@ -7,5 +7,12 @@
 }
 
 .result ul li {
-    list-style: circle;
+    /* list-style: circle; */
+}
+
+.result .container {
+    max-width: 500px;
+    margin: 0 auto;
+    border: solid 1px black;
+    background-color: rgba(76, 255, 144, 0.322);
 }
