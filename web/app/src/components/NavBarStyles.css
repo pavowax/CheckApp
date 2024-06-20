@@ -1,4 +1,4 @@
-.NavBarItems{
+.NavBarItems {
     background-color: #fff;
     display: flex;
     justify-content: space-between;
@@ -19,19 +19,47 @@
     display: none;
 }
 
-.navbar-logo{
+ul {
+    margin-bottom: 0 !important;
+}
+
+li:hover {
+    cursor: pointer;
+}
+
+#username {
+    position: relative;
+}
+
+#username ul {
+    position: absolute;
+    top: calc(100% + 15px);
+    left: 0;
+    padding: 10px !important;
+    background-color: white;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    border-radius: 4px;
+}
+
+#username ul li {
+    list-style: none !important;
+}
+
+.navbar-logo {
     color: #222;
     font-size: 2rem;
     cursor: pointer;
 }
-.nav-menu{
+
+.nav-menu {
     display: grid;
     grid-template-columns: repeat(6, auto);
     grid-gap: 10px;
     list-style: none;
     align-items: center;
 }
-.nav-links{
+
+.nav-links {
     text-decoration: none;
     color: #222;
     font-size: 1.2rem;
@@ -39,28 +67,33 @@
     padding: 0.7rem 1rem;
     white-space: nowrap;
 }
-.nav-links i{
+
+.nav-links i {
     padding-right: 10px;
-} 
-.nav-links:hover{   
-    background-color: #3c0161;
+}
+
+.nav-links:hover {
+    background-color: #2988d7;
     color: #fff;
     border-radius: 4px;
     transition: all 0.2s ease-in-out;
-}    
-.nav-links-mobile{
+}
+
+.nav-links-mobile {
     display: none;
 }
-.menu-icons{
+
+.menu-icons {
     display: none;
 }
 
 
 @media screen and (max-width: 1110px) {
-    .NavBarItems{
+    .NavBarItems {
         z-index: 99;
     }
-    .nav-menu{
+
+    .nav-menu {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
@@ -77,28 +110,32 @@
         transition: 0.3s ease-in-out;
         border-radius: 13px;
     }
-    .nav-menu.active{
-        left :0;
+
+    .nav-menu.active {
+        left: 0;
         opacity: 1;
         z-index: -1;
         transition: 0.3s ease-in-out;
     }
 
-    .nav-links{
+    .nav-links {
         display: block;
         width: 100%;
         font-size: 1.2rem;
         padding: 2rem 0;
     }
-    .nav-links:hover{
-        background: #3c0161;
+
+    .nav-links:hover {
+        background: #2988d7;
         transition: none;
     }
-    .menu-icons{
+
+    .menu-icons {
         display: block;
         cursor: pointer;
     }
-    .menu-icons i{
+
+    .menu-icons i {
         font-size: 1.2rem;
         color: #222;
     }

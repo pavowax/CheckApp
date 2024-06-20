@@ -1,3 +1,6 @@
+.body{
+    background-image: linear-gradient(to top, #fff, #2988d7 40%);
+}
 .button {
     position: absolute;
     top: 30px;

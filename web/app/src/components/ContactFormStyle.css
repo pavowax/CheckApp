@@ -43,7 +43,7 @@ button{
     
 }
 button:hover{
-    background-color: #3c0161;
+    background-color: #2988d7;
     color: #fff;
 }
 @media screen and (max-width:1110px) {

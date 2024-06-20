@@ -4,7 +4,7 @@ import { MenuItems } from './MenuItems';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-export default class NavBar extends Component {
+class NavBar extends Component {
 
   state = {
     clicked: false,
@@ -13,9 +13,7 @@ export default class NavBar extends Component {
   };
 
   handleClicke = () => {
-
-    this.state.clicked = !this.state.clicked
-
+    this.setState(prevState => ({ clicked: !prevState.clicked }));
   };
 
   getUsername = async () => {
@@ -27,15 +25,15 @@ export default class NavBar extends Component {
       const res = await axios.get('http://localhost/api/index', config);
       const username = JSON.parse(res.data.data.replaceAll(`'`, `"`)).Username;
       console.log(username);
-      this.state.username = username;
+      this.setState({ username });
     } catch (error) {
       console.error('Error fetching username:', error);
     }
   };
 
-  handleClickLogout = async () => {
+  handleClickLogout = () => {
     localStorage.removeItem('jwt');
-    const navigate = useNavigate();
+    const navigate = this.props.navigate;
     navigate('/sign');
   }
 
@@ -47,7 +45,7 @@ export default class NavBar extends Component {
     return (
       <nav className='NavBarItems'>
         <h1>
-          <a href='/' style={{ textDecoration: "none" }} className='navbar-logo'>SCANNING APP</a>
+          <a href='/' style={{ textDecoration: "none" }} className='navbar-logo'>CHECKAPP</a>
         </h1>
 
         <div className="menu-icons" onClick={this.handleClicke}>
@@ -64,16 +62,16 @@ export default class NavBar extends Component {
           ))}
           {this.state.username ? (
             <li key={4}>
-              <Link className="nav-links" id="sign" onClick={this.state.isShow = !this.state.isShow}>
+              <div className="nav-links" id="username" onClick={() => this.setState(prevState => ({ isShow: !prevState.isShow }))}>
                 <i className="fa-solid fa-user"> {this.state.username}</i>
                 <ul className={this.state.isShow ? "" : "d-none"}>
                   <li>
-                    <Link className="nav-links" onClick={this.handleClickLogout} id="logout">
+                    <div className="nav-links" onClick={this.handleClickLogout} id="logout">
                       <i className="fa-solid fa-user">Logout</i>
-                    </Link>
+                    </div>
                   </li>
                 </ul>
-              </Link>
+              </div>
             </li>
           ) : (
             <li key={4}>
@@ -86,4 +84,9 @@ export default class NavBar extends Component {
       </nav>
     );
   }
+}
+
+export default function WithNavigate(props) {
+  const navigate = useNavigate();
+  return <NavBar {...props} navigate={navigate} />;
 }

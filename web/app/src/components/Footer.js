@@ -5,7 +5,7 @@ const Footer = () => {
         <div className="footer">
             <div className="top">
                 <div>
-                    <h1>SCANNING APP</h1>
+                    <h1>CHECKAPP</h1>
                     <p>Açıklama ilerleyen zamanda yapılacaktır..</p>
                 </div>
                 <div>
