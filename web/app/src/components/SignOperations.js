@@ -27,6 +27,12 @@ function SignOperations() {
         // localStorage.setItem('username', username)
       }
       console.log(token);
+      const Authorization = localStorage.getItem('jwt')
+        const config = {
+      headers: { Authorization }
+      };
+      const username1 = await axios.get('http://localhost/api/index', config);    
+      console.log(username1.data);
       setIsLoggedIn(true);
       navigate('/', { state: { isLoggedIn } });
       setMessage('Login successful!');

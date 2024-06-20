@@ -1,18 +1,16 @@
-.result {
-    text-align: start;
+.button {
+    position: absolute;
+    top: 30px;
+    right: 30px;
 }
 
-.result ul {
-
+.button:hover {
+    transform: translateY(-10px);
 }
 
-.result ul li {
-    /* list-style: circle; */
-}
-
-.result .container {
-    max-width: 500px;
-    margin: 0 auto;
-    border: solid 1px black;
-    background-color: rgba(76, 255, 144, 0.322);
+h1 {
+    font-weight: 700;
+    font-size: 3rem;
+    margin-top: 20px;
+    margin-bottom: 40px;
 }

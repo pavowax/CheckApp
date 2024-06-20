@@ -27,11 +27,11 @@ export const MenuItems = [
         id : "contact",
         icon : "fa-solid fa-address-book"
     },
-    {
-        title : " Sign Up",
-        url : "/sign",
-        cName : "nav-links",
-        id : "sign",
-        icon : "fa-solid fa-user"
-    },
+    // {
+    //     title : " Sign Up",
+    //     url : "/sign",
+    //     cName : "nav-links",
+    //     id : "sign",
+    //     icon : "fa-solid fa-user"
+    // },
 ]

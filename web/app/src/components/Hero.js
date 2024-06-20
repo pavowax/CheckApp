@@ -34,9 +34,10 @@ function Hero(props) {
 
     console.log(sendData)
     setLoading(true);  // Overlay'i göster
+
     try {
       const response = await axios.post('http://localhost/api/scanner', sendData, config);
-      const data = response.data.data.replaceAll(`'`, `"`).replaceAll("None", "null").replaceAll("True", "true").replaceAll("False", "false");
+      const data = response.data.data.replaceAll(`'`, `"`).replaceAll("None", "null").replaceAll(`"null"`, "null").replaceAll("null", `"*** Secret ***"`).replaceAll("True", "true").replaceAll("False", "false");
       console.log(data);
       window.kerem = data;
       const parsedData = JSON.parse(data);

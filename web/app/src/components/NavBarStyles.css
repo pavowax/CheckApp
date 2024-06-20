@@ -15,6 +15,10 @@
     z-index: 9999;
 }
 
+.d-none {
+    display: none;
+}
+
 .navbar-logo{
     color: #222;
     font-size: 2rem;
