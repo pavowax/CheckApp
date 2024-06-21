@@ -1,23 +1,21 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  // useHistory hook'unu import edin
+import { useNavigate } from 'react-router-dom';
 import AlertDismissible from './AlertDismissible';
 
 
 function SignOperations() {
 
   const [username, setUsername] = useState('');
-  const [username1, setUsername1] = useState('');
   const [password, setPassword] = useState('');
-  const [password1, setPassword1] = useState('');
   const [phone_number, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const navigate = useNavigate();  // history objesini alın
+  const navigate = useNavigate();
   const [showRegisterAlert, setShowRegisterAlert] = useState(false);
   const [showLoginAlert, setShowLoginAlert] = useState(false);
   const [registerAlertMessage, setRegisterAlertMessage] = useState("Registered failed!");
+  const [registerAlertVariant, setRegisterAlertVariant] = useState("danger");
   const [loginAlertMessage, setLoginAlertMessage] = useState("Login failed!");
 
   const handleShowRegisterAlert = () => {
@@ -56,9 +54,7 @@ function SignOperations() {
       console.log(username1.data);
       setIsLoggedIn(true);
       navigate('/', { state: { isLoggedIn } });
-      // setMessage('Login successful!');
     } catch (error) {
-      // setMessage('Login failed: Invalid credentials');
       setLoginAlertMessage(error?.response?.data?.message || "Login failed!")
       handleShowLoginAlert();
     }
@@ -66,18 +62,35 @@ function SignOperations() {
   const handleRegister = async (event) => {
     event.preventDefault();
     try {
+      const token = localStorage.getItem('jwt');
+      if (token) {
+        setRegisterAlertVariant("danger")
+        setRegisterAlertMessage("Already logged in!")
+        return;
+      }
+
       const response = await axios.post('http://localhost/api/register', {
-        username1,
-        password1,
+        username,
+        password,
+        email,
         phone_number,
-        email
       });
       console.log(response.data)
-      if (response.message !== "OK") setRegisterAlertMessage(response?.data?.message || "Registered failed!")
-      // setMessage("Succesfully registered!");
+      if (response.data.message === "OK") {
+        setRegisterAlertVariant("success")
+        setRegisterAlertMessage("Succesfully Registered!")
+        window.location.reload();
+      }
+      else {
+
+        setRegisterAlertVariant("danger")
+        setRegisterAlertMessage(response?.data?.message || "Registered failed!")
+      }
+
+      handleShowRegisterAlert();
     } catch (error) {
-      // setMessage("Registered failed!");
       console.log(error)
+      setRegisterAlertVariant("danger")
       setRegisterAlertMessage(error?.response?.data?.message || "Registered failed!");
       handleShowRegisterAlert();
     }
@@ -90,10 +103,10 @@ function SignOperations() {
     setPassword(event.target.value);
   };
   const handleUsername1Change = (event) => {
-    setUsername1(event.target.value);
+    setUsername(event.target.value);
   };
   const handlePassword1Change = (event) => {
-    setPassword1(event.target.value);
+    setPassword(event.target.value);
   };
   const handlePhoneNumberChange = (event) => {
     setPhoneNumber(event.target.value);
@@ -102,27 +115,27 @@ function SignOperations() {
     setEmail(event.target.value);
   };
 
-  // const handleLogout = () => {
-  //   localStorage.removeItem('jwt');
-  //   setIsLoggedIn(false);
-  //   setMessage('Logged out');
-  // };
 
   const [isActive, setIsActive] = useState(false);
   const handleClick = () => {
     setIsActive(current => !current);
   };
 
+  const goToHome = () => {
+    navigate('/');
+  };
+
   return (
     <div className='body'>
+      <button className="button" onClick={goToHome}>Go to Homepage</button>
       <section className={isActive ? 'wrapper active' : 'wrapper'}>
         <div className="form signup">
           <header onClick={handleClick}>Signup</header>
           <form>
-            <input type="text" placeholder="Username" required value={username1} onChange={handleUsername1Change} />
-            <input type="email" placeholder="Email address" required value={email} onChange={handleEmailChange} />
-            <input type="password" placeholder="Password" required value={password1} onChange={handlePassword1Change} />
-            <input type="tel" placeholder="Phone Number" required value={phone_number} onChange={handlePhoneNumberChange} />
+            <input type="text" placeholder="Username" value={username} onChange={handleUsername1Change} />
+            <input type="email" placeholder="Email address" value={email} onChange={handleEmailChange} />
+            <input type="tel" placeholder="Phone Number" value={phone_number} onChange={handlePhoneNumberChange} />
+            <input type="password" placeholder="Password" value={password} onChange={handlePassword1Change} />
             <div className="checkbox">
               <input type="checkbox" id="signupCheck" />
               <label htmlFor="signupCheck">I accept all terms & conditions</label>
@@ -130,8 +143,8 @@ function SignOperations() {
             <input type="submit" value="Signup" onClick={handleRegister} />
             {showRegisterAlert && (
               <AlertDismissible
-                variant="danger"
-                heading="Register Error"
+                variant={registerAlertVariant}
+                heading="Register Message"
                 message={registerAlertMessage}
                 onClose={handleRegisterAlertClose}
               />
@@ -154,13 +167,9 @@ function SignOperations() {
                 onClose={handleLoginAlertClose}
               />
             )}
-
-            {/* <input typle="submit" value="Logout" className='lognButton' onClick={handleLogout} /> */}
-
           </form>
         </div>
       </section>
-      <p>{message}</p>
     </div>
   )
 }

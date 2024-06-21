@@ -1,5 +1,6 @@
-.body{
-    background-image: linear-gradient(to top, #fff, #2988d7 40%);
+body{
+    background: linear-gradient(#2988d7 0%, #FFF 70%);
+    min-height: 98vh;
 }
 .button {
     position: absolute;

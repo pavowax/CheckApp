@@ -1,5 +1,4 @@
-import { useEffect } from "react"
-import { Route, Routes, useLocation, useHistory } from "react-router-dom"
+import { Route, Routes } from "react-router-dom"
 import "./style.css"
 import Home from "./routes/Home";
 import About from "./routes/About";
@@ -10,17 +9,6 @@ import Result from "./routes/Result";
 
 
 function App() {
-  // const history = useHistory();
-  // const location = useLocation();
-
-  // useEffect(() => {
-  //   console.log('Current route:', location.pathname);
-  //   const token = localStorage.getItem('jwt');
-  //   if (!token) {
-  //     // history.push('/sign');
-  //   }
-  // }, [location]);
-
   return (
     <div className="App">
       <Routes>
