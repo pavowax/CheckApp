@@ -14,7 +14,7 @@ export const MenuItems = [
         icon : "fa-solid fa-circle-info"
     },
     {
-        title : " Service",
+        title : " Scan Type",
         url : "/service",
         cName : "nav-links",
         id : "service",

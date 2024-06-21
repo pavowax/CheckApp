@@ -6,7 +6,9 @@ const Footer = () => {
             <div className="top">
                 <div>
                     <h1>CHECKAPP</h1>
-                    <p>Açıklama ilerleyen zamanda yapılacaktır..</p>
+                    <hr></hr>
+                    <p>CheckApp is a dependable and easy-to-use software program that can find possible security holes in webpages. In order to find vulnerabilities, this program uses both passive and active scanning techniques, which involve examining network traffic and sending direct queries to target systems.<br></br>CheckApp's sophisticated vulnerability scanning algorithms and security testing methodologies allow it to simulate a variety of attack routes in order to thoroughly assess the security posture of websites. Users can prioritize security vulnerabilities based on severity and evaluate scan results in full reports.</p>
+                <hr></hr>
                 </div>
                 <div>
                     <a href="/">

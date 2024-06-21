@@ -9,7 +9,7 @@ function Service() {
       <NavBar/>
       <Hero
       cName = "hero-mid"
-      title = "SERVİCE"
+      title = "SCAN TYPE"
       />
       <ScanType/>
       <Footer/>
