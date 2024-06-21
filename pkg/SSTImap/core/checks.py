@@ -74,20 +74,23 @@ def print_injection_summary(channel):
 #     File read: {f'no' if not channel.data.get('read') else f'ok'}
 #     Code evaluation: {evaluation}
 # """
+    # result ={ 
+    #     '[0]': f'SSTImap identified the following injection point: {channel.injs[channel.inj_idx]["field"]} parameter: {channel.injs[channel.inj_idx]["param"]}',
+    #     '[1]': f'Engine: {channel.data.get("engine").capitalize()}',
+    #     '[2]': f'Injection: {prefix}{wrapper}{suffix}',
+    #     '[3]': f'Context: {"text" if (not prefix and not suffix) else "code"}',
+    #     '[4]': f'OS: {channel.data.get("os", "undetected")}',
+    #     '[5]': f'Technique: {"blind" if channel.data.get("blind") else "render"}',
+    #     '[6]': { # Capabilities
+    #         '[7]': f'Shell command execution: {execution}',
+    #         '[8]': f'Bind and reverse shell: {"no" if not channel.data.get("bind_shell") else "ok"}',
+    #         '[9]': f'File write: {writing}',
+    #         '[10]': f'File read: {"no" if not channel.data.get("read") else "ok"}',
+    #         '[11]': f'Code evaluation: {evaluation}'
+    #     }
+    # }
     result ={ 
-        '[0]': f'SSTImap identified the following injection point: {channel.injs[channel.inj_idx]["field"]} parameter: {channel.injs[channel.inj_idx]["param"]}',
-        '[1]': f'Engine: {channel.data.get("engine").capitalize()}',
-        '[2]': f'Injection: {prefix}{wrapper}{suffix}',
-        '[3]': f'Context: {"text" if (not prefix and not suffix) else "code"}',
-        '[4]': f'OS: {channel.data.get("os", "undetected")}',
-        '[5]': f'Technique: {"blind" if channel.data.get("blind") else "render"}',
-        '[6]': { # Capabilities
-            '[7]': f'Shell command execution: {execution}',
-            '[8]': f'Bind and reverse shell: {"no" if not channel.data.get("bind_shell") else "ok"}',
-            '[9]': f'File write: {writing}',
-            '[10]': f'File read: {"no" if not channel.data.get("read") else "ok"}',
-            '[11]': f'Code evaluation: {evaluation}'
-        }
+    'result': f'SSTImap identified the following injection point: {channel.injs[channel.inj_idx]["field"]} parameter: {channel.injs[channel.inj_idx]["param"]}'+f'Engine: {channel.data.get("engine").capitalize()}' +f'Injection: {prefix}{wrapper}{suffix}' +f'Context: {"text" if (not prefix and not suffix) else "code"}' +f'OS: {channel.data.get("os", "undetected")}' +f'Technique: {"blind" if channel.data.get("blind") else "render"}' + f'Capabilities: ' +f'Shell command execution: {execution}' +f'Bind and reverse shell: {"no" if not channel.data.get("bind_shell") else "ok"}' +f'File write: {writing}' +f'File read: {"no" if not channel.data.get("read") else "ok"}' +f'Code evaluation: {evaluation}'
     }
     channel.result = result
     log.log(21,result )
