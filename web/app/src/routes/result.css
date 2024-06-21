@@ -1,7 +1,14 @@
-body{
+.result {
     background: linear-gradient(#2988d7 0%, #FFF 70%);
-    min-height: 98vh;
+    min-height: 100vh;
+    padding: 0 20px;
 }
+
+.accordion {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
 .button {
     position: absolute;
     top: 30px;
@@ -15,6 +22,6 @@ body{
 h1 {
     font-weight: 700;
     font-size: 3rem;
-    margin-top: 20px;
+    padding-top: 20px;
     margin-bottom: 40px;
 }

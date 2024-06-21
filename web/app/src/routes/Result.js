@@ -50,7 +50,7 @@ function Result() {
     };
 
     return (
-        <div className="container">
+        <div className="result">
             <h1>Result Page</h1>
             <button className="button" onClick={goToHome}>Go to Homepage</button>
             {data ? renderData(data) : <p>No data available</p>}

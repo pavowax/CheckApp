@@ -61,14 +61,16 @@ function SignOperations() {
   };
   const handleRegister = async (event) => {
     event.preventDefault();
-    try {
-      const token = localStorage.getItem('jwt');
-      if (token) {
-        setRegisterAlertVariant("danger")
-        setRegisterAlertMessage("Already logged in!")
-        return;
-      }
 
+    const token = localStorage.getItem('jwt');
+    if (token) {
+      setRegisterAlertVariant("danger")
+      setRegisterAlertMessage("Already logged in!")
+      handleShowRegisterAlert();
+      return;
+    }
+
+    try {
       const response = await axios.post('http://localhost/api/register', {
         username,
         password,
