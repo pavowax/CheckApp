@@ -426,14 +426,15 @@ def waf_ps(address):
 
         print('Number of requests: %s' % attacker.requestnumber)# in response
         response_sentences.append(f'Number of requests: {attacker.requestnumber}')#here
-        data = {}
-        i=0
+        # data = {}
+        # i=0
+        result=""
         for value in response_sentences:
-            data[f'[{i}]'] = f'{value}'
-            i+=1
+            result += f'{value} '
+            # i+=1
         # json_data = json.dumps(data)
 
-        return data
+        return result
 
     #print table of results
     if len(results) > 0:
