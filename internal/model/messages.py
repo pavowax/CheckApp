@@ -40,7 +40,7 @@ class status_message:
     redirect_message="Redirect"
     bad_request_message="Bad Request"
     unauthorized_message="Unauthorized"
-    forbidden_message="Forbidden"
+    forbidden_message="You Should be Admin"
     not_found_message="Not Found"
     method_not_allowed_message="Method Not Allowed"
     internal_server_error_message="Internal Server Error"
