@@ -8,7 +8,7 @@ import './result.css';
 const renderData = (data, level = 0) => {
     // if (data === null || data === "null") { data = "*** Secret Information ***"; return (<span>{data}</span>) }
     if (typeof data === 'object' && data !== null) {
-        if (Array.isArray(data) && !data.length) { data = "*** Secret Information (Array) ***"; return (<span>{data}</span>) }
+        if (Array.isArray(data) && !data.length) { data = " no_result "; return (<span>{data}</span>) }
         return (
             <Accordion>
                 {Object.keys(data).map((key, index) => (

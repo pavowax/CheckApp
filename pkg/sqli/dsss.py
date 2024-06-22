@@ -91,7 +91,7 @@ def scan_page(url, data=None):
                                 vulnerable = all(ratios.values()) and min(ratios.values()) < FUZZY_THRESHOLD < max(ratios.values()) and abs(ratios[True] - ratios[False]) > FUZZY_THRESHOLD / 10
                         if vulnerable:
                             # print(" (i) %s parameter '%s' appears to be blind SQLi vulnerable (e.g.: '%s')" % (phase, match.group("parameter"), payloads[True]))
-                            sqli["parameter"]=f'parameter of \'{match.group("parameter")}\' appears to be SQLi vulnerable'
+                            sqli["parameter"]=f'parameter of {match.group("parameter")} appears to be SQLi vulnerable'
                             sqli["payload"]=f"{payloads[True]}"
                             retval = True
         if not usable:

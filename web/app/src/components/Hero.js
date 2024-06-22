@@ -62,7 +62,7 @@ function Hero(props) {
 
     try {
       const response = await axios.post('http://localhost/api/scanner', sendData, config);
-      const data = response.data.data.replaceAll(`'`, `"`).replaceAll("None", "null").replaceAll(`"null"`, "null").replaceAll("null", `"*** Secret ***"`).replaceAll("True", "true").replaceAll("False", "false");
+      const data = response.data.data.replaceAll(`'`, `"`).replaceAll("None", "null").replaceAll(`"null"`, "null").replaceAll("null", `" no_result "`).replaceAll("True", "true").replaceAll("False", "false");
       console.log(data);
       window.kerem = data;
       const parsedData = JSON.parse(data);
@@ -81,7 +81,7 @@ function Hero(props) {
         alert("Not found!")
     } catch (error) {
       console.error(error);
-      setAlertMessage(error?.response?.data?.message || "Search failed!");
+      setAlertMessage(error?.response?.data?.message || "Scan failed!");
       handleShowAlert();
     } finally {
       setLoading(false);  // Overlay'i kaldır
@@ -136,7 +136,7 @@ function Hero(props) {
               <label className="reputation-checkbox" for="reputation-checkbox">Reputation</label>
             </div>
           </div>
-          <button className='search-button' type='submit'>Search</button>
+          <button className='search-button' type='submit'>SCAN</button>
           {showAlert && (
             <AlertDismissible
               variant="danger"
