@@ -15,15 +15,15 @@
     },
     "securitytrails_subdomains": {
         "SECURITYTRAILS_API_URL":"https://api.securitytrails.com/v1/domain/",
-        "SECURITYTRAILS_API_KEY":"03nTO9ve8rjBy75_ZJkh4S4rWlo5gFwR"
+        "SECURITYTRAILS_API_KEY":"aGMEzh52WfHhXhR8zv7CVECTfbO_cJT5"
     },
     "securitytrails_dns_a":{
         "SECURITYTRAILS_DNS_API_URL":"https://api.securitytrails.com/v1/history/",
-        "SECURITYTRAILS_DNS_API_KEY":"03nTO9ve8rjBy75_ZJkh4S4rWlo5gFwR"
+        "SECURITYTRAILS_DNS_API_KEY":"aGMEzh52WfHhXhR8zv7CVECTfbO_cJT5"
     },
     "securitytrails_dns_mx":{
         "SECURITYTRAILS_DNS_API_URL":"https://api.securitytrails.com/v1/history/",
-        "SECURITYTRAILS_DNS_API_KEY":"03nTO9ve8rjBy75_ZJkh4S4rWlo5gFwR"
+        "SECURITYTRAILS_DNS_API_KEY":"aGMEzh52WfHhXhR8zv7CVECTfbO_cJT5"
     },
     "certspotter":{
         "CERTSPOTTER_API_URL":"https://api.certspotter.com/v1/issuances",
